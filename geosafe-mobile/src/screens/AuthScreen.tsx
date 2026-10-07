@@ -12,6 +12,7 @@ import {
   Alert
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
+import { HUD_COLORS, HUD_FONTS, HUD_SHADOWS } from '../theme/hudTheme';
 
 export const AuthScreen: React.FC = () => {
   const { user, signInAnonymous, signInWithEmail, updateProfile, logOut } = useAuth();
@@ -84,10 +85,11 @@ export const AuthScreen: React.FC = () => {
       <ScrollView contentContainerStyle={styles.container}>
         {/* Brand Header */}
         <View style={styles.brandHeader}>
-          <View style={styles.iconCircle}>
+          <View style={[styles.iconSquare, HUD_SHADOWS.hard]}>
             <Text style={styles.brandIcon}>🛡️</Text>
           </View>
-          <Text style={styles.appName}>GeoSafe</Text>
+          <Text style={styles.hudVersionTag}>[SECURITY CONSOLE // AUTH GATEWAY]</Text>
+          <Text style={styles.appName}>GEOSAFE</Text>
           <Text style={styles.tagline}>
             Urban Safety Analytics & Real-Time Emergency Response System
           </Text>
@@ -98,33 +100,34 @@ export const AuthScreen: React.FC = () => {
 
         {/* If user is already authenticated, show Profile Form */}
         {user ? (
-          <View style={styles.card}>
+          <View style={[styles.card, HUD_SHADOWS.hardLg]}>
             <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>Emergency Profile</Text>
+              <Text style={styles.cardTag}>[OPERATOR CREDENTIALS]</Text>
+              <Text style={styles.cardTitle}>EMERGENCY PROFILE</Text>
               <Text style={styles.cardSubtitle}>
-                Configure your emergency guardian contacts for rapid 1-tap dispatch
+                Configure guardian contact telemetry for rapid 1-tap SOS dispatch
               </Text>
             </View>
 
-            {errorMsg && <Text style={styles.errorText}>⚠️ {errorMsg}</Text>}
+            {errorMsg && <Text style={styles.errorText}>⚠️ [ERROR]: {errorMsg}</Text>}
 
             <View style={styles.formGroup}>
-              <Text style={styles.label}>Full Name</Text>
+              <Text style={styles.label}>OPERATOR FULL NAME</Text>
               <TextInput
                 style={styles.input}
                 placeholder="e.g. Ananya Sharma"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor="#737373"
                 value={name}
                 onChangeText={setName}
               />
             </View>
 
             <View style={styles.formGroup}>
-              <Text style={styles.label}>Your Phone Number</Text>
+              <Text style={styles.label}>CELLULAR PHONE NUMBER</Text>
               <TextInput
                 style={styles.input}
                 placeholder="+91 98765 43210"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor="#737373"
                 keyboardType="phone-pad"
                 value={phone}
                 onChangeText={setPhone}
@@ -132,43 +135,51 @@ export const AuthScreen: React.FC = () => {
             </View>
 
             <View style={styles.formGroup}>
-              <Text style={styles.label}>Primary Emergency Contact Phone *</Text>
+              <Text style={styles.label}>PRIMARY EMERGENCY GUARDIAN PHONE *</Text>
               <TextInput
                 style={[styles.input, styles.highlightInput]}
                 placeholder="+91 91234 56789 (Parent / Guardian)"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor="#737373"
                 keyboardType="phone-pad"
                 value={emergencyContact}
                 onChangeText={setEmergencyContact}
               />
               <Text style={styles.helperText}>
-                This contact receives automated SOS alerts and live GPS tracking links.
+                Automated SMS & live GPS streaming telemetry links broadcast to this number upon SOS trigger.
               </Text>
             </View>
 
             <TouchableOpacity
-              style={styles.primaryButton}
+              style={[styles.primaryButton, HUD_SHADOWS.hard]}
               onPress={handleSaveProfile}
               disabled={isSubmitting}
+              activeOpacity={0.8}
             >
               {isSubmitting ? (
                 <ActivityIndicator color="#FFFFFF" />
               ) : (
-                <Text style={styles.buttonText}>Save Emergency Profile</Text>
+                <Text style={styles.buttonText}>COMMIT EMERGENCY PROFILE ↗</Text>
               )}
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.secondaryButton} onPress={logOut}>
-              <Text style={styles.secondaryButtonText}>Sign Out ({user.uid.substring(0, 8)}...)</Text>
+            <TouchableOpacity
+              style={[styles.secondaryButton, HUD_SHADOWS.hardSm]}
+              onPress={logOut}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.secondaryButtonText}>
+                SIGN OUT [{user.uid.substring(0, 8).toUpperCase()}] ✕
+              </Text>
             </TouchableOpacity>
           </View>
         ) : (
           /* Sign In Form */
-          <View style={styles.card}>
+          <View style={[styles.card, HUD_SHADOWS.hardLg]}>
             <View style={styles.tabRow}>
               <TouchableOpacity
                 style={[styles.tab, authMode === 'anonymous' && styles.tabActive]}
                 onPress={() => setAuthMode('anonymous')}
+                activeOpacity={0.8}
               >
                 <Text
                   style={[
@@ -176,12 +187,13 @@ export const AuthScreen: React.FC = () => {
                     authMode === 'anonymous' && styles.tabTextActive
                   ]}
                 >
-                  Quick Demo Access
+                  DEMO GUEST ↗
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.tab, authMode === 'email' && styles.tabActive]}
                 onPress={() => setAuthMode('email')}
+                activeOpacity={0.8}
               >
                 <Text
                   style={[
@@ -189,39 +201,40 @@ export const AuthScreen: React.FC = () => {
                     authMode === 'email' && styles.tabTextActive
                   ]}
                 >
-                  Email / Password
+                  EMAIL / AUTH ↗
                 </Text>
               </TouchableOpacity>
             </View>
 
-            {errorMsg && <Text style={styles.errorText}>⚠️ {errorMsg}</Text>}
+            {errorMsg && <Text style={styles.errorText}>⚠️ [AUTH ERROR]: {errorMsg}</Text>}
 
             {authMode === 'anonymous' ? (
               <View style={styles.anonymousContainer}>
                 <Text style={styles.anonymousDesc}>
-                  Enter instantly without credentials. Perfect for testing, evaluation, and instant emergency dispatch.
+                  Enter instantly without credentials. Perfect for testing, evaluation, and instant emergency dispatch telemetry.
                 </Text>
 
                 <TouchableOpacity
-                  style={styles.primaryButton}
+                  style={[styles.primaryButton, HUD_SHADOWS.hard]}
                   onPress={handleAnonymousSignIn}
                   disabled={isSubmitting}
+                  activeOpacity={0.8}
                 >
                   {isSubmitting ? (
                     <ActivityIndicator color="#FFFFFF" />
                   ) : (
-                    <Text style={styles.buttonText}>Enter GeoSafe as Guest</Text>
+                    <Text style={styles.buttonText}>ENTER GEOSAFE AS GUEST ↗</Text>
                   )}
                 </TouchableOpacity>
               </View>
             ) : (
               <View style={styles.emailFormContainer}>
                 <View style={styles.formGroup}>
-                  <Text style={styles.label}>Email Address</Text>
+                  <Text style={styles.label}>EMAIL ADDRESS</Text>
                   <TextInput
                     style={styles.input}
                     placeholder="user@geosafe.org"
-                    placeholderTextColor="#9CA3AF"
+                    placeholderTextColor="#737373"
                     autoCapitalize="none"
                     keyboardType="email-address"
                     value={email}
@@ -230,11 +243,11 @@ export const AuthScreen: React.FC = () => {
                 </View>
 
                 <View style={styles.formGroup}>
-                  <Text style={styles.label}>Password</Text>
+                  <Text style={styles.label}>PASSWORD</Text>
                   <TextInput
                     style={styles.input}
                     placeholder="••••••••"
-                    placeholderTextColor="#9CA3AF"
+                    placeholderTextColor="#737373"
                     secureTextEntry
                     value={password}
                     onChangeText={setPassword}
@@ -242,22 +255,22 @@ export const AuthScreen: React.FC = () => {
                 </View>
 
                 <View style={styles.formGroup}>
-                  <Text style={styles.label}>Full Name (Optional)</Text>
+                  <Text style={styles.label}>OPERATOR FULL NAME (OPTIONAL)</Text>
                   <TextInput
                     style={styles.input}
                     placeholder="Ananya Sharma"
-                    placeholderTextColor="#9CA3AF"
+                    placeholderTextColor="#737373"
                     value={name}
                     onChangeText={setName}
                   />
                 </View>
 
                 <View style={styles.formGroup}>
-                  <Text style={styles.label}>Emergency Contact Phone (Optional)</Text>
+                  <Text style={styles.label}>GUARDIAN EMERGENCY PHONE (OPTIONAL)</Text>
                   <TextInput
                     style={styles.input}
                     placeholder="+91 91234 56789"
-                    placeholderTextColor="#9CA3AF"
+                    placeholderTextColor="#737373"
                     keyboardType="phone-pad"
                     value={emergencyContact}
                     onChangeText={setEmergencyContact}
@@ -265,14 +278,15 @@ export const AuthScreen: React.FC = () => {
                 </View>
 
                 <TouchableOpacity
-                  style={styles.primaryButton}
+                  style={[styles.primaryButton, HUD_SHADOWS.hard]}
                   onPress={handleEmailSignIn}
                   disabled={isSubmitting}
+                  activeOpacity={0.8}
                 >
                   {isSubmitting ? (
                     <ActivityIndicator color="#FFFFFF" />
                   ) : (
-                    <Text style={styles.buttonText}>Sign In / Create Account</Text>
+                    <Text style={styles.buttonText}>AUTHENTICATE OPERATOR ↗</Text>
                   )}
                 </TouchableOpacity>
               </View>
@@ -287,7 +301,7 @@ export const AuthScreen: React.FC = () => {
 const styles = StyleSheet.create({
   keyboardContainer: {
     flex: 1,
-    backgroundColor: '#0F172A'
+    backgroundColor: HUD_COLORS.canvas
   },
   container: {
     flexGrow: 1,
@@ -297,93 +311,112 @@ const styles = StyleSheet.create({
   },
   brandHeader: {
     alignItems: 'center',
-    marginBottom: 28
+    marginBottom: 24
   },
-  iconCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: '#1E293B',
-    borderWidth: 2,
-    borderColor: '#3B82F6',
+  iconSquare: {
+    width: 64,
+    height: 64,
+    borderRadius: 0,
+    backgroundColor: HUD_COLORS.clay,
+    borderWidth: 3,
+    borderColor: HUD_COLORS.borderBlack,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 14,
-    shadowColor: '#3B82F6',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 8
+    marginBottom: 12
   },
   brandIcon: {
-    fontSize: 34
+    fontSize: 32
+  },
+  hudVersionTag: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    fontWeight: '900',
+    color: HUD_COLORS.clay,
+    letterSpacing: 1,
+    marginBottom: 2
   },
   appName: {
     fontSize: 32,
     fontWeight: '900',
-    color: '#FFFFFF',
-    letterSpacing: 1
+    color: HUD_COLORS.textBlack,
+    letterSpacing: -0.5
   },
   tagline: {
-    fontSize: 13,
-    color: '#94A3B8',
+    fontSize: 12,
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
+    color: HUD_COLORS.textMuted,
     textAlign: 'center',
-    marginTop: 6,
+    marginTop: 4,
     maxWidth: 320
   },
   academicSubtitle: {
-    fontSize: 11,
-    color: '#38BDF8',
+    fontSize: 10,
+    fontFamily: HUD_FONTS.mono,
+    color: HUD_COLORS.clay,
     marginTop: 6,
-    fontWeight: '600'
+    fontWeight: '700'
   },
   card: {
     width: '100%',
-    maxWidth: 420,
-    backgroundColor: '#1E293B',
-    borderRadius: 24,
+    maxWidth: 440,
+    backgroundColor: HUD_COLORS.surfaceCard,
+    borderRadius: 0,
     padding: 24,
-    borderWidth: 1,
-    borderColor: '#334155',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 20,
-    elevation: 8
+    borderWidth: 3,
+    borderColor: HUD_COLORS.borderBlack
   },
   cardHeader: {
-    marginBottom: 18
+    marginBottom: 18,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E5',
+    paddingBottom: 8
+  },
+  cardTag: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    fontWeight: '900',
+    color: HUD_COLORS.clay,
+    letterSpacing: 1
   },
   cardTitle: {
     fontSize: 20,
-    fontWeight: '800',
-    color: '#FFFFFF'
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack,
+    letterSpacing: -0.5,
+    marginTop: 2
   },
   cardSubtitle: {
-    fontSize: 12,
-    color: '#94A3B8',
-    marginTop: 4
+    fontSize: 11,
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
+    color: HUD_COLORS.textMuted,
+    marginTop: 2
   },
   tabRow: {
     flexDirection: 'row',
-    backgroundColor: '#0F172A',
-    borderRadius: 12,
-    padding: 4,
-    marginBottom: 20
+    backgroundColor: '#EAE8E2',
+    borderRadius: 0,
+    padding: 3,
+    marginBottom: 20,
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack
   },
   tab: {
     flex: 1,
     paddingVertical: 10,
-    borderRadius: 8,
+    borderRadius: 0,
     alignItems: 'center'
   },
   tabActive: {
-    backgroundColor: '#2563EB'
+    backgroundColor: HUD_COLORS.borderBlack
   },
   tabText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#94A3B8'
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 11,
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack,
+    letterSpacing: 0.5
   },
   tabTextActive: {
     color: '#FFFFFF'
@@ -393,75 +426,89 @@ const styles = StyleSheet.create({
     paddingVertical: 8
   },
   anonymousDesc: {
-    fontSize: 13,
-    color: '#CBD5E1',
+    fontSize: 12,
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
+    color: HUD_COLORS.textMuted,
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: 18,
     marginBottom: 20
   },
   emailFormContainer: {
-    gap: 14
+    gap: 12
   },
   formGroup: {
-    marginBottom: 14
+    marginBottom: 12
   },
   label: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#E2E8F0',
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 10,
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack,
+    letterSpacing: 0.5,
     marginBottom: 6
   },
   input: {
-    backgroundColor: '#0F172A',
-    borderWidth: 1,
-    borderColor: '#334155',
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 14,
-    color: '#FFFFFF'
+    backgroundColor: '#FAF9F6',
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack,
+    borderRadius: 0,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 13,
+    color: HUD_COLORS.textBlack
   },
   highlightInput: {
-    borderColor: '#EF4444',
-    backgroundColor: '#181E30'
+    borderLeftWidth: 4,
+    borderLeftColor: HUD_COLORS.clay
   },
   helperText: {
-    fontSize: 11,
-    color: '#94A3B8',
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
+    fontSize: 10,
+    color: HUD_COLORS.textMuted,
     marginTop: 4
   },
   primaryButton: {
-    backgroundColor: '#2563EB',
-    paddingVertical: 14,
-    borderRadius: 14,
+    backgroundColor: HUD_COLORS.borderBlack,
+    paddingVertical: 16,
+    borderRadius: 0,
     alignItems: 'center',
     marginTop: 10,
-    shadowColor: '#2563EB',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack
   },
   buttonText: {
     color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '700'
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 13,
+    fontWeight: '900',
+    letterSpacing: 0.5
   },
   secondaryButton: {
-    marginTop: 14,
-    paddingVertical: 10,
-    alignItems: 'center'
+    marginTop: 12,
+    paddingVertical: 12,
+    borderRadius: 0,
+    alignItems: 'center',
+    backgroundColor: '#FAF9F6',
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack
   },
   secondaryButtonText: {
-    color: '#94A3B8',
-    fontSize: 12,
-    fontWeight: '500'
+    color: HUD_COLORS.textBlack,
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 0.5
   },
   errorText: {
-    color: '#F87171',
-    fontSize: 12,
+    fontFamily: HUD_FONTS.mono,
+    color: HUD_COLORS.riskHigh,
+    fontSize: 11,
     marginBottom: 12,
-    textAlign: 'center'
+    textAlign: 'center',
+    fontWeight: '800'
   }
 });
 

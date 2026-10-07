@@ -16,6 +16,8 @@ interface SafeZoneMapProps {
   originPoint?: { name: string; lat: number; lng: number };
   destinationPoint?: { name: string; lat: number; lng: number };
   mapStyle?: 'streets' | 'dark' | 'outdoor';
+  onToggleFullscreen?: () => void;
+  isFullscreen?: boolean;
 }
 
 export const SafeZoneMap: React.FC<SafeZoneMapProps> = ({
@@ -28,7 +30,9 @@ export const SafeZoneMap: React.FC<SafeZoneMapProps> = ({
   directRouteWaypoints,
   selectedRouteId = 'safe',
   originPoint,
-  destinationPoint
+  destinationPoint,
+  onToggleFullscreen,
+  isFullscreen = false
 }) => {
   const mapRef = useRef<MapView | null>(null);
 
@@ -152,9 +156,16 @@ export const SafeZoneMap: React.FC<SafeZoneMapProps> = ({
         )}
       </MapView>
 
-      <TouchableOpacity style={styles.recenterButton} onPress={recenter} activeOpacity={0.8}>
-        <Text style={styles.recenterText}>🎯 My GPS</Text>
-      </TouchableOpacity>
+      <View style={styles.rightTopControls}>
+        <TouchableOpacity style={styles.recenterButton} onPress={recenter} activeOpacity={0.8}>
+          <Text style={styles.recenterText}>🎯 My GPS</Text>
+        </TouchableOpacity>
+        {onToggleFullscreen && (
+          <TouchableOpacity style={styles.expandButton} onPress={onToggleFullscreen} activeOpacity={0.8}>
+            <Text style={styles.expandButtonText}>{isFullscreen ? '✕ Exit' : '⛶ Fullscreen'}</Text>
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 };
@@ -162,7 +173,7 @@ export const SafeZoneMap: React.FC<SafeZoneMapProps> = ({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    borderRadius: 18,
+    borderRadius: 0,
     overflow: 'hidden',
     position: 'relative'
   },
@@ -173,25 +184,51 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0
   },
-  recenterButton: {
+  rightTopControls: {
     position: 'absolute',
     top: 14,
     right: 14,
+    flexDirection: 'row',
+    gap: 6,
+    zIndex: 1000
+  },
+  recenterButton: {
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 4,
-    zIndex: 1000
+    borderRadius: 0,
+    borderWidth: 2,
+    borderColor: '#000000',
+    shadowColor: '#000000',
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 4
   },
   recenterText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#0F172A'
+    fontFamily: 'monospace',
+    fontSize: 10,
+    fontWeight: '900',
+    color: '#000000'
+  },
+  expandButton: {
+    backgroundColor: '#000000',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 0,
+    borderWidth: 2,
+    borderColor: '#000000',
+    shadowColor: '#000000',
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 4
+  },
+  expandButtonText: {
+    fontFamily: 'monospace',
+    fontSize: 10,
+    fontWeight: '900',
+    color: '#FFFFFF'
   }
 });
 

@@ -12,6 +12,7 @@ import { ActiveEmergency } from '../../types';
 import { emergencyService } from '../../services/EmergencyService';
 import { SafeZoneMap } from '../Map/SafeZoneMap';
 import { useSafety } from '../../context/SafetyContext';
+import { HUD_COLORS, HUD_FONTS, HUD_SHADOWS } from '../../theme/hudTheme';
 
 interface GuardianTrackingViewProps {
   emergencyId?: string | null;
@@ -86,15 +87,20 @@ export const GuardianTrackingView: React.FC<GuardianTrackingViewProps> = ({
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      {/* Header bar */}
+      {/* Header bar: Neo-Brutalist Tactical HUD */}
       <View style={styles.header}>
         <View>
-          <Text style={styles.headerTitle}>Guardian Live Response</Text>
-          <Text style={styles.headerSubtitle}>Real-Time GPS Emergency Stream</Text>
+          <Text style={styles.headerTag}>[GUARDIAN RESPONSE // STREAM]</Text>
+          <Text style={styles.headerTitle}>GUARDIAN LIVE RESPONSE</Text>
+          <Text style={styles.headerSubtitle}>Real-Time GPS Telemetry Stream & Dispatch Network</Text>
         </View>
         {onClose && (
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeText}>✕ Close</Text>
+          <TouchableOpacity
+            style={[styles.closeButton, HUD_SHADOWS.hardSm]}
+            onPress={onClose}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.closeText}>CLOSE ✕</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -110,6 +116,7 @@ export const GuardianTrackingView: React.FC<GuardianTrackingViewProps> = ({
                 selectedEmergency?.emergency_id === em.emergency_id && styles.selectorPillActive
               ]}
               onPress={() => setSelectedEmergency(em)}
+              activeOpacity={0.8}
             >
               <Text
                 style={[
@@ -117,7 +124,7 @@ export const GuardianTrackingView: React.FC<GuardianTrackingViewProps> = ({
                   selectedEmergency?.emergency_id === em.emergency_id && styles.selectorTextActive
                 ]}
               >
-                🚨 {em.user_name || em.emergency_id}
+                🚨 {em.user_name?.toUpperCase() || em.emergency_id.slice(0, 8)}
               </Text>
             </TouchableOpacity>
           ))}
@@ -126,50 +133,57 @@ export const GuardianTrackingView: React.FC<GuardianTrackingViewProps> = ({
 
       {selectedEmergency ? (
         <View style={styles.body}>
-          {/* Status banner */}
-          <View style={styles.statusBanner}>
+          {/* Status banner: Inverted High-Contrast Alert Box */}
+          <View style={[styles.statusBanner, HUD_SHADOWS.hard]}>
             <View style={styles.liveIndicatorRow}>
               <View style={styles.beaconDot} />
               <Text style={styles.liveBannerText}>
                 {selectedEmergency.status === 'ACTIVE'
-                  ? 'LIVE GPS TRACKING ACTIVE'
-                  : 'EMERGENCY RESOLVED'}
+                  ? 'LIVE GPS TRACKING STREAM ENGAGED'
+                  : 'EMERGENCY PROTOCOL RESOLVED'}
               </Text>
             </View>
             <Text style={styles.timeUpdated}>
-              Last update: {new Date().toLocaleTimeString()} (5s Interval)
+              INTERVAL: 5000ms • UPDATED {new Date().toLocaleTimeString()}
             </Text>
           </View>
 
           {/* Victim Details Card */}
-          <View style={styles.victimCard}>
+          <View style={[styles.victimCard, HUD_SHADOWS.hard]}>
             <View style={styles.victimRow}>
               <View>
-                <Text style={styles.victimName}>{selectedEmergency.user_name || 'Protected User'}</Text>
-                <Text style={styles.victimId}>ID: {selectedEmergency.emergency_id}</Text>
+                <Text style={styles.victimName}>
+                  {selectedEmergency.user_name?.toUpperCase() || 'PROTECTED USER'}
+                </Text>
+                <Text style={styles.victimId}>
+                  TELEMETRY ID: {selectedEmergency.emergency_id}
+                </Text>
               </View>
               <TouchableOpacity
-                style={styles.shareButton}
+                style={[styles.shareButton, HUD_SHADOWS.hardSm]}
                 onPress={handleShare}
                 activeOpacity={0.8}
               >
-                <Text style={styles.shareButtonText}>{copiedLink ? '✓ Sent' : '🔗 Share Link'}</Text>
+                <Text style={styles.shareButtonText}>
+                  {copiedLink ? 'SENT ✓' : 'SHARE TRACKER ↗'}
+                </Text>
               </TouchableOpacity>
             </View>
 
+            {/* Monospace GPS Coordinates Grid */}
             <View style={styles.coordsRow}>
               <View style={styles.coordBox}>
-                <Text style={styles.coordLabel}>Latitude</Text>
+                <Text style={styles.coordLabel}>LATITUDE</Text>
                 <Text style={styles.coordValue}>{selectedEmergency.current_lat.toFixed(5)}°N</Text>
               </View>
               <View style={styles.coordBox}>
-                <Text style={styles.coordLabel}>Longitude</Text>
+                <Text style={styles.coordLabel}>LONGITUDE</Text>
                 <Text style={styles.coordValue}>{selectedEmergency.current_lng.toFixed(5)}°E</Text>
               </View>
               <View style={styles.coordBox}>
-                <Text style={styles.coordLabel}>Updates</Text>
+                <Text style={styles.coordLabel}>WAYPOINTS</Text>
                 <Text style={styles.coordValue}>
-                  {selectedEmergency.history?.length || 1} pts
+                  {selectedEmergency.history?.length || 1} PTS
                 </Text>
               </View>
             </View>
@@ -177,26 +191,29 @@ export const GuardianTrackingView: React.FC<GuardianTrackingViewProps> = ({
             {/* Quick Action Buttons */}
             <View style={styles.actionRow}>
               <TouchableOpacity
-                style={styles.callButton}
+                style={[styles.callButton, HUD_SHADOWS.hardSm]}
                 onPress={handleCallEmergencyContact}
                 activeOpacity={0.8}
               >
-                <Text style={styles.callButtonText}>📞 Call Contact</Text>
+                <Text style={styles.callButtonText}>📞 CALL EMERGENCY CONTACT ↗</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={styles.resolveButton}
+                style={[styles.resolveButton, HUD_SHADOWS.hardSm]}
                 onPress={() => emergencyService.resolveEmergency(selectedEmergency.emergency_id)}
                 activeOpacity={0.8}
               >
-                <Text style={styles.resolveButtonText}>Mark Resolved</Text>
+                <Text style={styles.resolveButtonText}>RESOLVE [SAFE] ↗</Text>
               </TouchableOpacity>
             </View>
           </View>
 
-          {/* Real-time Map with moving Emergency Marker */}
-          <View style={styles.mapWrapper}>
-            <Text style={styles.mapSectionTitle}>Tactical Map & Crime Zone Overlays</Text>
+          {/* Real-time Map with moving Emergency Marker: Framed in 3px Black Border */}
+          <View style={[styles.mapWrapper, HUD_SHADOWS.hardLg]}>
+            <View style={styles.mapHeaderRow}>
+              <Text style={styles.mapSectionTitle}>[TACTICAL HUD MAP // GUARDIAN RADAR]</Text>
+              <Text style={styles.mapStatusLive}>STREAMING</Text>
+            </View>
             <SafeZoneMap
               userLocation={{
                 latitude: selectedEmergency.current_lat,
@@ -209,11 +226,12 @@ export const GuardianTrackingView: React.FC<GuardianTrackingViewProps> = ({
           </View>
         </View>
       ) : (
-        <View style={styles.emptyState}>
+        <View style={[styles.emptyState, HUD_SHADOWS.hard]}>
           <Text style={styles.emptyIcon}>🛡️</Text>
-          <Text style={styles.emptyTitle}>No Active Emergencies</Text>
+          <Text style={styles.emptyTag}>[STANDBY PROTOCOL]</Text>
+          <Text style={styles.emptyTitle}>NO ACTIVE SOS DISPATCHES</Text>
           <Text style={styles.emptyText}>
-            When a user triggers the HOLD FOR SOS button, their live location stream will instantly appear here for guardians and first responders.
+            When a user engages the HOLD FOR SOS trigger, their live coordinates and streaming risk telemetry will broadcast immediately to this console.
           </Text>
         </View>
       )}
@@ -224,7 +242,7 @@ export const GuardianTrackingView: React.FC<GuardianTrackingViewProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC'
+    backgroundColor: HUD_COLORS.canvas
   },
   contentContainer: {
     padding: 16,
@@ -234,46 +252,65 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16
+    marginBottom: 16,
+    borderBottomWidth: 2,
+    borderBottomColor: HUD_COLORS.borderBlack,
+    paddingBottom: 10
+  },
+  headerTag: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    fontWeight: '900',
+    color: HUD_COLORS.clay,
+    letterSpacing: 1
   },
   headerTitle: {
     fontSize: 22,
-    fontWeight: '800',
-    color: '#0F172A'
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack,
+    letterSpacing: -0.5
   },
   headerSubtitle: {
-    fontSize: 12,
-    color: '#64748B',
+    fontSize: 11,
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
+    color: HUD_COLORS.textMuted,
     marginTop: 2
   },
   closeButton: {
-    backgroundColor: '#E2E8F0',
+    backgroundColor: '#FFFFFF',
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 16
+    borderRadius: 0,
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack
   },
   closeText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#334155'
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 11,
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack
   },
   selectorScroll: {
     marginBottom: 14
   },
   selectorPill: {
-    backgroundColor: '#E2E8F0',
+    backgroundColor: '#FFFFFF',
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 20,
+    borderRadius: 0,
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack,
     marginRight: 8
   },
   selectorPillActive: {
-    backgroundColor: '#DC2626'
+    backgroundColor: HUD_COLORS.riskHigh
   },
   selectorText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#334155'
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 11,
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack
   },
   selectorTextActive: {
     color: '#FFFFFF'
@@ -282,10 +319,10 @@ const styles = StyleSheet.create({
     gap: 16
   },
   statusBanner: {
-    backgroundColor: '#FEF2F2',
-    borderWidth: 1.5,
-    borderColor: '#F87171',
-    borderRadius: 14,
+    backgroundColor: HUD_COLORS.surfaceDark,
+    borderWidth: 2,
+    borderColor: HUD_COLORS.riskHigh,
+    borderRadius: 0,
     padding: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -299,80 +336,90 @@ const styles = StyleSheet.create({
   beaconDot: {
     width: 10,
     height: 10,
-    borderRadius: 5,
-    backgroundColor: '#DC2626'
+    borderRadius: 0,
+    backgroundColor: HUD_COLORS.riskHigh
   },
   liveBannerText: {
-    color: '#991B1B',
-    fontWeight: '800',
-    fontSize: 12,
+    color: '#FFFFFF',
+    fontFamily: HUD_FONTS.mono,
+    fontWeight: '900',
+    fontSize: 11,
     letterSpacing: 0.5
   },
   timeUpdated: {
-    color: '#7F1D1D',
-    fontSize: 11
+    fontFamily: HUD_FONTS.mono,
+    color: '#A3A3A3',
+    fontSize: 9,
+    fontWeight: '700'
   },
   victimCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 18,
+    backgroundColor: HUD_COLORS.surfaceCard,
+    borderRadius: 0,
     padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 3
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack
   },
   victimRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 14
+    marginBottom: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E5',
+    paddingBottom: 8
   },
   victimName: {
     fontSize: 18,
-    fontWeight: '700',
-    color: '#0F172A'
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack,
+    letterSpacing: -0.5
   },
   victimId: {
-    fontSize: 11,
-    color: '#64748B',
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 10,
+    color: HUD_COLORS.textMuted,
     marginTop: 2
   },
   shareButton: {
-    backgroundColor: '#EFF6FF',
+    backgroundColor: HUD_COLORS.clay,
     paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#BFDBFE'
+    paddingVertical: 8,
+    borderRadius: 0,
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack
   },
   shareButtonText: {
-    color: '#2563EB',
-    fontSize: 12,
-    fontWeight: '700'
+    color: '#FFFFFF',
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 11,
+    fontWeight: '900'
   },
   coordsRow: {
     flexDirection: 'row',
-    backgroundColor: '#F1F5F9',
-    borderRadius: 12,
+    backgroundColor: '#FAF9F6',
+    borderRadius: 0,
     padding: 10,
     justifyContent: 'space-between',
-    marginBottom: 14
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: '#E5E5E5'
   },
   coordBox: {
     alignItems: 'center',
     flex: 1
   },
   coordLabel: {
-    fontSize: 10,
-    color: '#64748B',
-    fontWeight: '600',
-    textTransform: 'uppercase'
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    color: HUD_COLORS.textMuted,
+    fontWeight: '800',
+    letterSpacing: 0.5
   },
   coordValue: {
+    fontFamily: HUD_FONTS.mono,
     fontSize: 13,
-    fontWeight: '700',
-    color: '#1E293B',
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack,
     marginTop: 2
   },
   actionRow: {
@@ -381,66 +428,101 @@ const styles = StyleSheet.create({
   },
   callButton: {
     flex: 1,
-    backgroundColor: '#2563EB',
+    backgroundColor: HUD_COLORS.borderBlack,
     paddingVertical: 12,
-    borderRadius: 12,
-    alignItems: 'center'
+    borderRadius: 0,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack
   },
   callButtonText: {
     color: '#FFFFFF',
-    fontWeight: '700',
-    fontSize: 13
+    fontFamily: HUD_FONTS.mono,
+    fontWeight: '900',
+    fontSize: 11,
+    letterSpacing: 0.5
   },
   resolveButton: {
     flex: 1,
-    backgroundColor: '#10B981',
+    backgroundColor: HUD_COLORS.riskLow,
     paddingVertical: 12,
-    borderRadius: 12,
-    alignItems: 'center'
+    borderRadius: 0,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack
   },
   resolveButtonText: {
-    color: '#FFFFFF',
-    fontWeight: '700',
-    fontSize: 13
+    color: '#000000',
+    fontFamily: HUD_FONTS.mono,
+    fontWeight: '900',
+    fontSize: 11,
+    letterSpacing: 0.5
   },
   mapWrapper: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 18,
-    padding: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 3
+    borderRadius: 0,
+    overflow: 'hidden',
+    borderWidth: 3,
+    borderColor: HUD_COLORS.borderBlack
+  },
+  mapHeaderRow: {
+    backgroundColor: HUD_COLORS.surfaceDark,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderBottomWidth: 2,
+    borderBottomColor: HUD_COLORS.borderBlack
   },
   mapSectionTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#334155',
-    marginBottom: 10
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 10,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    letterSpacing: 1
+  },
+  mapStatusLive: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    fontWeight: '900',
+    color: HUD_COLORS.riskLow
   },
   emptyState: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 18,
+    backgroundColor: HUD_COLORS.surfaceCard,
+    borderRadius: 0,
     padding: 30,
     alignItems: 'center',
-    marginTop: 20
+    marginTop: 20,
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack
   },
   emptyIcon: {
     fontSize: 48,
-    marginBottom: 12
+    marginBottom: 8
+  },
+  emptyTag: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 10,
+    fontWeight: '900',
+    color: HUD_COLORS.clay,
+    letterSpacing: 1,
+    marginBottom: 4
   },
   emptyTitle: {
     fontSize: 18,
-    fontWeight: '700',
-    color: '#0F172A',
-    marginBottom: 8
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack,
+    marginBottom: 8,
+    letterSpacing: -0.5
   },
   emptyText: {
-    fontSize: 13,
-    color: '#64748B',
+    fontSize: 12,
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
+    color: HUD_COLORS.textMuted,
     textAlign: 'center',
-    lineHeight: 20
+    lineHeight: 18,
+    maxWidth: 360
   }
 });
 

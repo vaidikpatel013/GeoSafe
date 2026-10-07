@@ -49,3 +49,25 @@ export interface FakeCallSettings {
   callerNumber: string;
   delaySeconds: number;
 }
+
+export interface CrimeIncident {
+  crime_id: number;
+  date: string;
+  time: string;
+  crime_type: string;
+  severity: number;
+  time_of_day: string;
+  police_response_mins: number;
+  resolved: boolean;
+  suspect_arrested: boolean;
+  cctv_nearby: number;
+}
+
+export interface LocationCrimeData {
+  city: string;
+  location: string;
+  avg_cctv: number;
+  avg_police_stations: number;
+  total_crimes: number;
+  crimes: CrimeIncident[];
+}

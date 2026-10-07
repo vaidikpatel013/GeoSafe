@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, DimensionValue } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, DimensionValue, Platform } from 'react-native';
 import { ActiveEmergency, SafetyZone, UserLocation } from '../../types';
 import { safetyZoneService } from '../../services/SafetyZoneService';
 
@@ -17,6 +17,8 @@ interface SafeZoneMapProps {
   originPoint?: { name: string; lat: number; lng: number };
   destinationPoint?: { name: string; lat: number; lng: number };
   mapStyle?: 'streets' | 'dark' | 'outdoor';
+  onToggleFullscreen?: () => void;
+  isFullscreen?: boolean;
 }
 
 export const SafeZoneMap: React.FC<SafeZoneMapProps> = ({
@@ -30,7 +32,9 @@ export const SafeZoneMap: React.FC<SafeZoneMapProps> = ({
   selectedRouteId = 'safe',
   originPoint,
   destinationPoint,
-  mapStyle = 'streets'
+  mapStyle = 'streets',
+  onToggleFullscreen,
+  isFullscreen = false
 }) => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const leafletMapRef = useRef<any>(null);
@@ -185,16 +189,16 @@ export const SafeZoneMap: React.FC<SafeZoneMapProps> = ({
       });
 
       const popupContent = `
-        <div style="font-family: system-ui, sans-serif; min-width: 175px; padding: 4px;">
-          <div style="font-weight: 800; font-size: 15px; color: #0F172A;">${zone.Location}</div>
-          <div style="font-size: 12px; color: #64748B; margin-bottom: 6px;">${zone.City} • ${zone.Time_of_Day} Interval</div>
-          <div style="display: inline-block; padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 800; background: ${color}22; color: ${color}; margin-bottom: 8px;">
-            ${zone.risk_category} (${zone.avg_risk_score.toFixed(2)}/5.0)
+        <div style="font-family: ui-monospace, monospace; min-width: 185px; padding: 8px; background: #FFFFFF; border: 2px solid #000000; box-shadow: 4px 4px 0px 0px #000000;">
+          <div style="font-weight: 900; font-size: 15px; color: #000000; letter-spacing: -0.5px; text-transform: uppercase;">${zone.Location}</div>
+          <div style="font-family: Georgia, serif; font-style: italic; font-size: 11px; color: #525252; margin-bottom: 6px;">${zone.City} • ${zone.Time_of_Day} Interval</div>
+          <div style="display: inline-block; padding: 3px 8px; border: 1.5px solid #000000; font-size: 10px; font-weight: 900; background: ${color}; color: ${color === '#F59E0B' ? '#000000' : '#FFFFFF'}; margin-bottom: 8px;">
+            ${zone.risk_category.toUpperCase()} (${zone.avg_risk_score.toFixed(2)} / 5.0)
           </div>
-          <div style="font-size: 11px; color: #334155; display: flex; flex-direction: column; gap: 3px;">
-            <div>🎥 CCTV Surveillance: <b>${zone.avg_cctv.toFixed(1)} cameras</b></div>
-            <div>🚓 Police Stations: <b>${zone.avg_police_stations.toFixed(1)} stations</b></div>
-            <div>📊 Crime Severity: <b>${(zone.avg_severity || 3.5).toFixed(1)}/10.0</b></div>
+          <div style="font-size: 10px; color: #171717; display: flex; flex-direction: column; gap: 3px; font-weight: 700;">
+            <div>🎥 CCTV SURVEILLANCE: <b>${zone.avg_cctv.toFixed(1)}</b></div>
+            <div>🚓 POLICE COVERAGE: <b>${zone.avg_police_stations.toFixed(1)}</b></div>
+            <div>📊 SEVERITY INDEX: <b>${(zone.avg_severity || 3.5).toFixed(1)} / 10.0</b></div>
           </div>
         </div>
       `;
@@ -342,9 +346,16 @@ export const SafeZoneMap: React.FC<SafeZoneMapProps> = ({
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={styles.recenterButton} onPress={recenter} activeOpacity={0.8}>
-          <Text style={styles.recenterText}>🎯 My GPS</Text>
-        </TouchableOpacity>
+        <View style={styles.rightTopControls}>
+          <TouchableOpacity style={styles.recenterButton} onPress={recenter} activeOpacity={0.8}>
+            <Text style={styles.recenterText}>🎯 My GPS</Text>
+          </TouchableOpacity>
+          {onToggleFullscreen && (
+            <TouchableOpacity style={styles.expandButton} onPress={onToggleFullscreen} activeOpacity={0.8}>
+              <Text style={styles.expandButtonText}>{isFullscreen ? '✕ Exit' : '⛶ Fullscreen'}</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
 
       {/* MapTiler Attribution Badge */}
@@ -374,15 +385,10 @@ export const SafeZoneMap: React.FC<SafeZoneMapProps> = ({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    borderRadius: 18,
+    borderRadius: 0,
     overflow: 'hidden',
-    backgroundColor: '#0F172A',
-    position: 'relative',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.15,
-    shadowRadius: 14,
-    elevation: 6
+    backgroundColor: '#121212',
+    position: 'relative'
   },
   topControlRow: {
     position: 'absolute',
@@ -395,75 +401,98 @@ const styles = StyleSheet.create({
   },
   styleButtonGroup: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(15, 23, 42, 0.88)',
-    borderRadius: 20,
-    padding: 3,
-    borderWidth: 1,
-    borderColor: '#334155'
+    backgroundColor: '#FFFFFF',
+    borderRadius: 0,
+    padding: 2,
+    borderWidth: 2,
+    borderColor: '#000000',
+    ...(Platform.OS === 'web' ? { boxShadow: '3px 3px 0px 0px #000000' } : {})
   },
   styleBtn: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 16
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 0
   },
   styleBtnActive: {
-    backgroundColor: '#2563EB'
+    backgroundColor: '#000000'
   },
   styleBtnText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#94A3B8'
+    fontFamily: 'monospace',
+    fontSize: 10,
+    fontWeight: '900',
+    color: '#000000'
   },
   styleBtnTextActive: {
     color: '#FFFFFF'
   },
+  rightTopControls: {
+    flexDirection: 'row',
+    gap: 6,
+    alignItems: 'center'
+  },
   recenterButton: {
     backgroundColor: '#FFFFFF',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 4
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 0,
+    borderWidth: 2,
+    borderColor: '#000000',
+    ...(Platform.OS === 'web' ? { boxShadow: '3px 3px 0px 0px #000000' } : {})
   },
   recenterText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#0F172A'
+    fontFamily: 'monospace',
+    fontSize: 10,
+    fontWeight: '900',
+    color: '#000000'
+  },
+  expandButton: {
+    backgroundColor: '#000000',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 0,
+    borderWidth: 2,
+    borderColor: '#000000',
+    ...(Platform.OS === 'web' ? { boxShadow: '3px 3px 0px 0px #000000' } : {})
+  },
+  expandButtonText: {
+    fontFamily: 'monospace',
+    fontSize: 10,
+    fontWeight: '900',
+    color: '#FFFFFF'
   },
   mapTilerBadge: {
     position: 'absolute',
     bottom: 12,
     right: 12,
-    backgroundColor: 'rgba(15, 23, 42, 0.85)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
+    backgroundColor: '#000000',
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: 0,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#000000',
     zIndex: 1000
   },
   mapTilerBadgeText: {
-    fontSize: 9,
-    fontWeight: '700',
-    color: '#38BDF8'
+    fontFamily: 'monospace',
+    fontSize: 8,
+    fontWeight: '900',
+    color: '#FFFFFF'
   },
   legendContainer: {
     position: 'absolute',
     bottom: 12,
     left: 12,
-    backgroundColor: 'rgba(15, 23, 42, 0.92)',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
+    backgroundColor: '#F9F8F6',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 0,
     flexDirection: 'row',
-    gap: 12,
+    gap: 10,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#334155',
-    zIndex: 1000
+    borderWidth: 2,
+    borderColor: '#000000',
+    zIndex: 1000,
+    ...(Platform.OS === 'web' ? { boxShadow: '3px 3px 0px 0px #000000' } : {})
   },
   legendItem: {
     flexDirection: 'row',
@@ -473,12 +502,15 @@ const styles = StyleSheet.create({
   legendDot: {
     width: 8,
     height: 8,
-    borderRadius: 4
+    borderRadius: 0,
+    borderWidth: 1,
+    borderColor: '#000000'
   },
   legendLabel: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: '#E2E8F0'
+    fontFamily: 'monospace',
+    fontSize: 9,
+    fontWeight: '900',
+    color: '#000000'
   }
 });
 

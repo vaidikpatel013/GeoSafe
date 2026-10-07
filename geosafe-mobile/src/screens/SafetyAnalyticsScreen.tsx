@@ -11,6 +11,8 @@ import {
 import { useSafety } from '../context/SafetyContext';
 import { safetyZoneService } from '../services/SafetyZoneService';
 import { SafetyZone } from '../types';
+import { HUD_COLORS, HUD_FONTS, HUD_SHADOWS } from '../theme/hudTheme';
+import { LocationCrimeModal } from '../components/Analytics/LocationCrimeModal';
 
 export const SafetyAnalyticsScreen: React.FC = () => {
   const { zones, cityFilter, selectCity, timeOfDayFilter, setTimeOfDayFilter } = useSafety();
@@ -18,6 +20,7 @@ export const SafetyAnalyticsScreen: React.FC = () => {
   const currentCity = cityFilter === 'All' ? 'Mumbai' : cityFilter;
   const [activeTab, setActiveTab] = useState<'ranking' | 'diurnal' | 'infrastructure'>('ranking');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedZoneDetail, setSelectedZoneDetail] = useState<{ zone: SafetyZone; rank: number } | null>(null);
 
   // Filter zones by current city and current time of day
   const cityTimeZones = zones.filter(
@@ -67,103 +70,117 @@ export const SafetyAnalyticsScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
+      {/* Header: Neo-Brutalist Tactical HUD */}
       <View style={styles.header}>
         <View style={styles.brandRow}>
-          <View style={styles.brandBadge}>
+          <View style={[styles.brandBadge, HUD_SHADOWS.hardSm]}>
             <Text style={styles.brandBadgeIcon}>📊</Text>
           </View>
           <View>
-            <Text style={styles.headerTitle}>Crime Risk Intelligence</Text>
+            <Text style={styles.headerTag}>[INTELLIGENCE // STATISTICAL HUD]</Text>
+            <Text style={styles.headerTitle}>CRIME RISK INTELLIGENCE</Text>
             <Text style={styles.headerSubtitle}>
-              Empirical Safety Analytics for {currentCity}
+              Empirical Safety Analytics & Surveillance Density for {currentCity}
             </Text>
           </View>
         </View>
 
-        {/* City Toggle */}
+        {/* City Toggle: Sharp Block Buttons */}
         <View style={styles.cityPillGroup}>
           <TouchableOpacity
             style={[styles.cityPill, currentCity === 'Mumbai' && styles.cityPillActive]}
             onPress={() => selectCity('Mumbai')}
+            activeOpacity={0.8}
           >
             <Text style={[styles.cityPillText, currentCity === 'Mumbai' && styles.cityPillTextActive]}>
-              🏙️ Mumbai
+              🏙️ MUMBAI
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.cityPill, currentCity === 'Delhi' && styles.cityPillActive]}
             onPress={() => selectCity('Delhi')}
+            activeOpacity={0.8}
           >
             <Text style={[styles.cityPillText, currentCity === 'Delhi' && styles.cityPillTextActive]}>
-              🏛️ Delhi
+              🏛️ DELHI
             </Text>
           </TouchableOpacity>
         </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Metric Summary Cards */}
+        {/* Metric Summary Cards: Alternating Light, Clay, and Dark Blocks with Hard Shadows */}
         <View style={styles.summaryCardsRow}>
-          <View style={styles.summaryCard}>
-            <Text style={styles.summaryLabel}>Metropolitan Average</Text>
-            <Text style={styles.summaryValMain}>{cityAvgScore}</Text>
-            <Text style={styles.summarySub}>Out of 5.0 scale ({timeOfDayFilter})</Text>
+          {/* Card 1: Light Surface */}
+          <View style={[styles.summaryCardLight, HUD_SHADOWS.hard]}>
+            <Text style={styles.summaryLabelLight}>[METRO AVERAGE]</Text>
+            <Text style={styles.summaryValLight}>{cityAvgScore}</Text>
+            <Text style={styles.summarySubLight}>OUT OF 5.00 ({timeOfDayFilter.toUpperCase()})</Text>
           </View>
 
-          <View style={[styles.summaryCard, { borderColor: '#10B981', backgroundColor: '#07241A' }]}>
-            <Text style={styles.summaryLabel}>Safest Sector</Text>
-            <Text style={[styles.summaryValMain, { color: '#10B981' }]}>
+          {/* Card 2: Clay Accent Surface */}
+          <View style={[styles.summaryCardClay, HUD_SHADOWS.hard]}>
+            <Text style={styles.summaryLabelClay}>[SAFEST SECTOR]</Text>
+            <Text style={styles.summaryValClay}>
               {safestZone?.avg_risk_score.toFixed(2) || '1.11'}
             </Text>
-            <Text style={styles.summarySub}>{safestZone?.Location || 'Marine Drive'}</Text>
+            <Text style={styles.summarySubClay}>
+              {safestZone?.Location.toUpperCase() || 'MARINE DRIVE'}
+            </Text>
           </View>
 
-          <View style={[styles.summaryCard, { borderColor: '#EF4444', backgroundColor: '#260F14' }]}>
-            <Text style={styles.summaryLabel}>Highest Risk Hotspot</Text>
-            <Text style={[styles.summaryValMain, { color: '#EF4444' }]}>
+          {/* Card 3: Dark Charcoal Surface */}
+          <View style={[styles.summaryCardDark, HUD_SHADOWS.hard]}>
+            <Text style={styles.summaryLabelDark}>[HIGHEST RISK HOTSPOT]</Text>
+            <Text style={styles.summaryValDark}>
               {mostDangerousZone?.avg_risk_score.toFixed(2) || '4.90'}
             </Text>
-            <Text style={styles.summarySub}>{mostDangerousZone?.Location || 'Kurla Junction'}</Text>
+            <Text style={styles.summarySubDark}>
+              {mostDangerousZone?.Location.toUpperCase() || 'KURLA JUNCTION'}
+            </Text>
           </View>
         </View>
 
-        {/* Sub Navigation Tabs */}
-        <View style={styles.tabBar}>
+        {/* Sub Navigation Tabs: Blocky Outline Buttons with Hard Shadow */}
+        <View style={[styles.tabBar, HUD_SHADOWS.hard]}>
           <TouchableOpacity
             style={[styles.tabItem, activeTab === 'ranking' && styles.tabItemActive]}
             onPress={() => setActiveTab('ranking')}
+            activeOpacity={0.8}
           >
             <Text style={[styles.tabText, activeTab === 'ranking' && styles.tabTextActive]}>
-              🏆 Zone Risk Rankings
+              ZONE RISK RANKINGS ↗
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.tabItem, activeTab === 'diurnal' && styles.tabItemActive]}
             onPress={() => setActiveTab('diurnal')}
+            activeOpacity={0.8}
           >
             <Text style={[styles.tabText, activeTab === 'diurnal' && styles.tabTextActive]}>
-              🌙 Day vs Night Analysis
+              DIURNAL VARIANCE ↗
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.tabItem, activeTab === 'infrastructure' && styles.tabItemActive]}
             onPress={() => setActiveTab('infrastructure')}
+            activeOpacity={0.8}
           >
             <Text style={[styles.tabText, activeTab === 'infrastructure' && styles.tabTextActive]}>
-              🎥 CCTV Correlation
+              INFRASTRUCTURE CORRELATION ↗
             </Text>
           </TouchableOpacity>
         </View>
 
+        {/* TAB 1: Zone Risk Rankings — Alternating Light & Dark Cards */}
         {activeTab === 'ranking' && (
           <View style={styles.tabContent}>
-            {/* Search and Time of Day filter */}
-            <View style={styles.filterControlsRow}>
+            {/* Filter and Time of Day controls */}
+            <View style={[styles.filterControlsPanel, HUD_SHADOWS.hardSm]}>
               <TextInput
                 style={styles.searchInput}
-                placeholder={`Search location in ${currentCity}...`}
-                placeholderTextColor="#94A3B8"
+                placeholder={`Filter sectors in ${currentCity}...`}
+                placeholderTextColor="#737373"
                 value={searchQuery}
                 onChangeText={setSearchQuery}
               />
@@ -174,35 +191,59 @@ export const SafetyAnalyticsScreen: React.FC = () => {
                     key={tod}
                     style={[styles.timeChip, timeOfDayFilter === tod && styles.timeChipActive]}
                     onPress={() => setTimeOfDayFilter(tod)}
+                    activeOpacity={0.8}
                   >
                     <Text style={[styles.timeChipText, timeOfDayFilter === tod && styles.timeChipTextActive]}>
-                      {tod}
+                      {tod.toUpperCase()}
                     </Text>
                   </TouchableOpacity>
                 ))}
               </ScrollView>
             </View>
 
-            <Text style={styles.sectionSubtitle}>
-              Ranked from Highest Risk to Safest in {currentCity} ({timeOfDayFilter} Interval)
-            </Text>
+            <View style={styles.subHeadingRow}>
+              <Text style={styles.subHeadingTag}>[SORT: DESCENDING RISK SCORE]</Text>
+              <Text style={styles.sectionSubtitle}>
+                RANKED FROM HIGHEST RISK TO SAFEST // {currentCity.toUpperCase()} ({timeOfDayFilter.toUpperCase()} WINDOW)
+              </Text>
+            </View>
 
-            {/* List of all locations with distinct scores and meters */}
+            {/* Alternating Light (#FFFFFF) and Dark (#121212) Ranking Cards - Clickable for Crime Dossier */}
             {rankedZones.map((zone, idx) => {
+              const isDark = idx % 2 === 1;
               const color = safetyZoneService.getRiskColor(zone.risk_category);
               const scorePercent = ((zone.avg_risk_score - 1) / 4) * 100;
 
               return (
-                <View key={`${zone.Location}-${idx}`} style={styles.rankingCard}>
+                <TouchableOpacity
+                  key={`${zone.Location}-${idx}`}
+                  style={[
+                    isDark ? styles.rankingCardDark : styles.rankingCardLight,
+                    HUD_SHADOWS.hard
+                  ]}
+                  onPress={() => setSelectedZoneDetail({ zone, rank: idx + 1 })}
+                  activeOpacity={0.8}
+                >
                   <View style={styles.rankingCardTop}>
-                    <View style={styles.rankBadge}>
-                      <Text style={styles.rankNumber}>#{idx + 1}</Text>
+                    <View style={isDark ? styles.rankBadgeDark : styles.rankBadgeLight}>
+                      <Text style={isDark ? styles.rankNumberDark : styles.rankNumberLight}>
+                        #{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}
+                      </Text>
                     </View>
 
                     <View style={styles.rankInfo}>
-                      <Text style={styles.rankLocationName}>{zone.Location}</Text>
-                      <Text style={styles.rankMetaText}>
-                        {zone.City} • {zone.Time_of_Day} • {zone.total_incidents} incidents recorded
+                      <View style={styles.rankLocationRow}>
+                        <Text style={isDark ? styles.rankLocationNameDark : styles.rankLocationNameLight}>
+                          {zone.Location.toUpperCase()}
+                        </Text>
+                        <View style={[styles.viewDossierBadge, isDark ? styles.viewDossierBadgeDark : styles.viewDossierBadgeLight]}>
+                          <Text style={[styles.viewDossierBadgeText, isDark ? styles.viewDossierBadgeTextDark : styles.viewDossierBadgeTextLight]}>
+                            DOSSIER ↗
+                          </Text>
+                        </View>
+                      </View>
+                      <Text style={isDark ? styles.rankMetaTextDark : styles.rankMetaTextLight}>
+                        {zone.City} • {zone.Time_of_Day} Interval • {zone.total_incidents} INCIDENTS
                       </Text>
                     </View>
 
@@ -210,115 +251,176 @@ export const SafetyAnalyticsScreen: React.FC = () => {
                       <Text style={[styles.rankScoreValue, { color }]}>
                         {zone.avg_risk_score.toFixed(2)}
                       </Text>
-                      <View style={[styles.riskBadge, { backgroundColor: `${color}20`, borderColor: color }]}>
-                        <Text style={[styles.riskBadgeText, { color }]}>{zone.risk_category}</Text>
+                      <View style={[styles.riskBadge, { backgroundColor: color }]}>
+                        <Text style={styles.riskBadgeText}>
+                          {zone.risk_category === 'Low Risk' ? 'LOW' : zone.risk_category === 'Moderate Risk' ? 'MOD' : 'HIGH'}
+                        </Text>
                       </View>
                     </View>
                   </View>
 
-                  {/* Distinct visual bar meter proportional to actual score */}
-                  <View style={styles.meterTrack}>
+                  {/* Sharp Metric Progress Bar */}
+                  <View style={isDark ? styles.meterTrackDark : styles.meterTrackLight}>
                     <View
                       style={[
                         styles.meterFill,
                         {
-                          width: `${Math.min(100, Math.max(12, scorePercent))}%`,
+                          width: `${Math.min(100, Math.max(8, scorePercent))}%`,
                           backgroundColor: color
                         }
                       ]}
                     />
                   </View>
 
-                  {/* Metrics row */}
+                  {/* Telemetry row */}
                   <View style={styles.rankMetricsRow}>
-                    <Text style={styles.rankMetricText}>🎥 CCTV Cameras: <Text style={styles.metricBold}>{zone.avg_cctv.toFixed(1)}</Text></Text>
-                    <Text style={styles.rankMetricText}>🚓 Police Stations: <Text style={styles.metricBold}>{zone.avg_police_stations.toFixed(1)}</Text></Text>
-                    <Text style={styles.rankMetricText}>⚠️ Severity: <Text style={styles.metricBold}>{(zone.avg_severity || 3.5).toFixed(1)}/10</Text></Text>
+                    <Text style={isDark ? styles.rankMetricTextDark : styles.rankMetricTextLight}>
+                      🎥 CCTV: <Text style={styles.metricMono}>{zone.avg_cctv.toFixed(1)} CAMERAS</Text>
+                    </Text>
+                    <Text style={isDark ? styles.rankMetricTextDark : styles.rankMetricTextLight}>
+                      🚓 POLICE: <Text style={styles.metricMono}>{zone.avg_police_stations.toFixed(1)} STATIONS</Text>
+                    </Text>
+                    <Text style={isDark ? styles.rankMetricTextDark : styles.rankMetricTextLight}>
+                      ⚠️ SEVERITY: <Text style={styles.metricMono}>{(zone.avg_severity || 3.5).toFixed(1)} / 10</Text>
+                    </Text>
                   </View>
-                </View>
+
+                  {/* Card Dossier Footer Prompt */}
+                  <View style={[styles.cardCtaFooter, isDark ? styles.cardCtaFooterDark : styles.cardCtaFooterLight]}>
+                    <Text style={[styles.cardCtaFooterText, isDark ? styles.cardCtaFooterTextDark : styles.cardCtaFooterTextLight]}>
+                      [CLICK TO VIEW RECORDED CRIMES, DATES/TIMES & 1-LINE JUSTIFICATION ↗]
+                    </Text>
+                  </View>
+                </TouchableOpacity>
               );
             })}
           </View>
         )}
 
+        {/* TAB 2: Diurnal Temporal Risk Variance — Alternating Light/Dark Cards */}
         {activeTab === 'diurnal' && (
           <View style={styles.tabContent}>
-            <Text style={styles.sectionSubtitle}>
-              Diurnal Temporal Risk Variance (Time-of-Day Multiplier Impact)
-            </Text>
+            <View style={styles.subHeadingRow}>
+              <Text style={styles.subHeadingTag}>[TEMPORAL COEFFICIENTS]</Text>
+              <Text style={styles.sectionSubtitle}>
+                DIURNAL TEMPORAL RISK VARIANCE // TIME-OF-DAY MULTIPLIERS
+              </Text>
+            </View>
 
-            {diurnalData.map((d) => {
-              const color = d.avgScore > 3.5 ? '#EF4444' : d.avgScore > 2.3 ? '#F59E0B' : '#10B981';
+            {diurnalData.map((d, idx) => {
+              const isDark = idx % 2 === 1;
+              const color = d.avgScore > 3.5 ? HUD_COLORS.riskHigh : d.avgScore > 2.3 ? HUD_COLORS.riskMod : HUD_COLORS.riskLow;
               const percent = ((d.avgScore - 1) / 4) * 100;
 
               return (
-                <View key={d.tod} style={styles.diurnalCard}>
+                <View
+                  key={d.tod}
+                  style={[
+                    isDark ? styles.diurnalCardDark : styles.diurnalCardLight,
+                    HUD_SHADOWS.hard
+                  ]}
+                >
                   <View style={styles.diurnalCardTop}>
-                    <View>
-                      <Text style={styles.diurnalName}>
-                        {d.tod === 'Night' ? '🌙 Night Interval (21:00 - 05:00)' : d.tod === 'Evening' ? '🌇 Evening Interval (17:00 - 21:00)' : d.tod === 'Afternoon' ? '☀️ Afternoon (12:00 - 17:00)' : '🌅 Morning (05:00 - 12:00)'}
+                    <View style={{ flex: 1 }}>
+                      <Text style={isDark ? styles.diurnalNameDark : styles.diurnalNameLight}>
+                        {d.tod === 'Night' ? '🌙 NIGHT INTERVAL (21:00 - 05:00)' : d.tod === 'Evening' ? '🌇 EVENING INTERVAL (17:00 - 21:00)' : d.tod === 'Afternoon' ? '☀️ AFTERNOON (12:00 - 17:00)' : '🌅 MORNING (05:00 - 12:00)'}
                       </Text>
-                      <Text style={styles.diurnalWeight}>
-                        {d.tod === 'Night' ? '1.6x Multiplier (Peak Vulnerability)' : d.tod === 'Evening' ? '1.3x Multiplier' : d.tod === 'Afternoon' ? '1.1x Multiplier' : '1.0x Baseline Multiplier'}
+                      <Text style={isDark ? styles.diurnalWeightDark : styles.diurnalWeightLight}>
+                        {d.tod === 'Night' ? '1.6x Multiplier (Peak Vulnerability Window)' : d.tod === 'Evening' ? '1.3x Multiplier (Elevated Transit Risk)' : d.tod === 'Afternoon' ? '1.1x Multiplier' : '1.0x Baseline Diurnal Multiplier'}
                       </Text>
                     </View>
 
                     <Text style={[styles.diurnalScore, { color }]}>{d.avgScore.toFixed(2)}</Text>
                   </View>
 
-                  <View style={styles.meterTrack}>
+                  <View style={isDark ? styles.meterTrackDark : styles.meterTrackLight}>
                     <View style={[styles.meterFill, { width: `${percent}%`, backgroundColor: color }]} />
                   </View>
 
                   <View style={styles.diurnalMetaRow}>
-                    <Text style={styles.diurnalMetaText}>High Risk Hotspots: {d.highRiskCount} / {d.total}</Text>
-                    <Text style={styles.diurnalMetaText}>Average CCTV: {d.avgCctv} cameras</Text>
+                    <Text style={isDark ? styles.diurnalMetaTextDark : styles.diurnalMetaTextLight}>
+                      HIGH RISK HOTSPOTS: {d.highRiskCount} / {d.total}
+                    </Text>
+                    <Text style={isDark ? styles.diurnalMetaTextDark : styles.diurnalMetaTextLight}>
+                      AVG CCTV: {d.avgCctv} CAMERAS
+                    </Text>
                   </View>
                 </View>
               );
             })}
 
-            <View style={styles.findingCard}>
-              <Text style={styles.findingTitle}>📌 Key Architectural Finding:</Text>
+            {/* Architectural Finding Panel: Solid Clay Accent with 3px Black Border */}
+            <View style={[styles.findingCard, HUD_SHADOWS.hardLg]}>
+              <Text style={styles.findingTag}>ARCHITECTURAL OBSERVATION // </Text>
+              <Text style={styles.findingTitle}>DIURNAL CRIME RISK MULTIPLIER VALIDATION</Text>
               <Text style={styles.findingText}>
-                During Night intervals, urban crime severity increases significantly due to diminished street surveillance and reduced pedestrian traffic. GeoSafe's Safe Route Navigator actively detours around sectors exhibiting a Night risk score exceeding 3.5.
+                During Night intervals, urban crime severity escalates significantly (+60% baseline) due to diminished street surveillance and reduced pedestrian foot-traffic. GeoSafe's Safe Route Navigator actively detours around corridors exhibiting Night risk scores exceeding 3.50.
               </Text>
             </View>
           </View>
         )}
 
+        {/* TAB 3: Infrastructure Correlation — Hard-Bordered Metric Containers */}
         {activeTab === 'infrastructure' && (
           <View style={styles.tabContent}>
-            <Text style={styles.sectionSubtitle}>
-              Infrastructure Impact: Surveillance & Police Density vs Risk Suppression
-            </Text>
+            <View style={styles.subHeadingRow}>
+              <Text style={styles.subHeadingTag}>[EMPIRICAL INFRASTRUCTURE ANALYSIS]</Text>
+              <Text style={styles.sectionSubtitle}>
+                SURVEILLANCE & POLICE PROXIMITY VS RISK SUPPRESSION
+              </Text>
+            </View>
 
-            <View style={styles.infraCard}>
-              <Text style={styles.infraTitle}>🎥 CCTV Surveillance Impact</Text>
-              <Text style={styles.infraDesc}>
+            {/* Card 1: CCTV Impact — Light Surface */}
+            <View style={[styles.infraCardLight, HUD_SHADOWS.hard]}>
+              <Text style={styles.infraTagLight}>[CCTV SURVEILLANCE TELEMETRY]</Text>
+              <Text style={styles.infraTitleLight}>🎥 CCTV SURVEILLANCE IMPACT</Text>
+              <Text style={styles.infraDescLight}>
                 Sectors with more than 8 operational CCTV cameras (e.g. Bandra Kurla Complex, Marine Drive, Connaught Place) demonstrate an average risk score reduction of 58% compared to low-surveillance sectors.
               </Text>
               <View style={styles.infraStatsRow}>
-                <View style={styles.infraStatBox}>
-                  <Text style={styles.infraStatNumber}>&gt;8 Cameras</Text>
-                  <Text style={styles.infraStatLabel}>Avg Risk: 1.62 (Safe)</Text>
+                <View style={styles.infraStatBoxLight}>
+                  <Text style={styles.infraStatNumberLight}>&gt; 8 CAMERAS</Text>
+                  <Text style={styles.infraStatLabelSafe}>AVG RISK: 1.62 (LOW RISK)</Text>
                 </View>
-                <View style={styles.infraStatBox}>
-                  <Text style={styles.infraStatNumber}>&lt;4 Cameras</Text>
-                  <Text style={[styles.infraStatLabel, { color: '#EF4444' }]}>Avg Risk: 4.45 (High)</Text>
+                <View style={styles.infraStatBoxLight}>
+                  <Text style={styles.infraStatNumberLight}>&lt; 4 CAMERAS</Text>
+                  <Text style={styles.infraStatLabelDanger}>AVG RISK: 4.45 (HIGH RISK)</Text>
                 </View>
               </View>
             </View>
 
-            <View style={styles.infraCard}>
-              <Text style={styles.infraTitle}>🚓 Rapid Police Presence Coverage</Text>
-              <Text style={styles.infraDesc}>
-                Proximity to police stations correlates strongly with lower incident frequency and faster response dispatch times, reducing unprovoked street harassment.
+            {/* Card 2: Police Presence — Dark Charcoal Surface */}
+            <View style={[styles.infraCardDark, HUD_SHADOWS.hard]}>
+              <Text style={styles.infraTagDark}>[EMERGENCY DISPATCH COVERAGE]</Text>
+              <Text style={styles.infraTitleDark}>🚓 RAPID POLICE PRESENCE COVERAGE</Text>
+              <Text style={styles.infraDescDark}>
+                Proximity to police stations correlates strongly with lower incident frequency and faster response dispatch times, reducing unprovoked street harassment and establishing safe transit corridors.
               </Text>
+              <View style={styles.infraStatsRow}>
+                <View style={styles.infraStatBoxDark}>
+                  <Text style={styles.infraStatNumberDark}>HIGH PROXIMITY</Text>
+                  <Text style={styles.infraStatLabelSafe}>RAPID ESCALATION SUPPRESSION</Text>
+                </View>
+                <View style={styles.infraStatBoxDark}>
+                  <Text style={styles.infraStatNumberDark}>LOW PROXIMITY</Text>
+                  <Text style={styles.infraStatLabelDanger}>REQUIRES GUARDIAN WATCH</Text>
+                </View>
+              </View>
             </View>
           </View>
         )}
       </ScrollView>
+
+      {/* Location Crime Detail Dossier Modal */}
+      {selectedZoneDetail && (
+        <LocationCrimeModal
+          visible={!!selectedZoneDetail}
+          zone={selectedZoneDetail.zone}
+          rank={selectedZoneDetail.rank}
+          timeOfDay={timeOfDayFilter}
+          onClose={() => setSelectedZoneDetail(null)}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -326,14 +428,14 @@ export const SafetyAnalyticsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#090D16'
+    backgroundColor: HUD_COLORS.canvas
   },
   header: {
     paddingHorizontal: 20,
     paddingVertical: 14,
-    backgroundColor: '#0B111E',
-    borderBottomWidth: 1,
-    borderBottomColor: '#1E293B',
+    backgroundColor: HUD_COLORS.canvas,
+    borderBottomWidth: 2,
+    borderBottomColor: HUD_COLORS.borderBlack,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center'
@@ -344,48 +446,58 @@ const styles = StyleSheet.create({
     gap: 12
   },
   brandBadge: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: '#1E293B',
+    width: 44,
+    height: 44,
+    borderRadius: 0,
+    backgroundColor: HUD_COLORS.clay,
     borderWidth: 2,
-    borderColor: '#F59E0B',
+    borderColor: HUD_COLORS.borderBlack,
     justifyContent: 'center',
     alignItems: 'center'
   },
   brandBadgeIcon: {
     fontSize: 22
   },
-  headerTitle: {
-    fontSize: 20,
+  headerTag: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
     fontWeight: '900',
-    color: '#FFFFFF'
+    color: HUD_COLORS.clay,
+    letterSpacing: 1
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack,
+    letterSpacing: -0.5
   },
   headerSubtitle: {
     fontSize: 11,
-    color: '#94A3B8',
-    marginTop: 2
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
+    color: HUD_COLORS.textMuted,
+    marginTop: 1
   },
   cityPillGroup: {
     flexDirection: 'row',
-    backgroundColor: '#1E293B',
-    borderRadius: 20,
-    padding: 3,
-    borderWidth: 1,
-    borderColor: '#334155'
+    backgroundColor: '#EAE8E2',
+    borderRadius: 0,
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack
   },
   cityPill: {
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 16
+    borderRadius: 0
   },
   cityPillActive: {
-    backgroundColor: '#2563EB'
+    backgroundColor: HUD_COLORS.borderBlack
   },
   cityPillText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#94A3B8'
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 11,
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack
   },
   cityPillTextActive: {
     color: '#FFFFFF'
@@ -393,7 +505,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 16,
     paddingBottom: 50,
-    maxWidth: 1000,
+    maxWidth: 1040,
     alignSelf: 'center',
     width: '100%'
   },
@@ -402,113 +514,199 @@ const styles = StyleSheet.create({
     gap: 10,
     marginBottom: 16
   },
-  summaryCard: {
+  summaryCardLight: {
     flex: 1,
-    backgroundColor: '#131B2E',
-    borderRadius: 18,
+    backgroundColor: HUD_COLORS.surfaceCard,
+    borderRadius: 0,
     padding: 14,
-    borderWidth: 1,
-    borderColor: '#1E293B'
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack
   },
-  summaryLabel: {
-    fontSize: 11,
-    color: '#94A3B8',
-    fontWeight: '600'
+  summaryLabelLight: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    color: HUD_COLORS.textMuted,
+    fontWeight: '900',
+    letterSpacing: 0.5
   },
-  summaryValMain: {
-    fontSize: 26,
+  summaryValLight: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 28,
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack,
+    marginVertical: 4
+  },
+  summarySubLight: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    color: HUD_COLORS.textMuted,
+    fontWeight: '700'
+  },
+  summaryCardClay: {
+    flex: 1,
+    backgroundColor: HUD_COLORS.clay,
+    borderRadius: 0,
+    padding: 14,
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack
+  },
+  summaryLabelClay: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    color: '#FFE2D7',
+    fontWeight: '900',
+    letterSpacing: 0.5
+  },
+  summaryValClay: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 28,
     fontWeight: '900',
     color: '#FFFFFF',
     marginVertical: 4
   },
-  summarySub: {
-    fontSize: 10,
-    color: '#CBD5E1',
-    fontWeight: '500'
+  summarySubClay: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    color: '#FFE2D7',
+    fontWeight: '800'
+  },
+  summaryCardDark: {
+    flex: 1,
+    backgroundColor: HUD_COLORS.surfaceDark,
+    borderRadius: 0,
+    padding: 14,
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack
+  },
+  summaryLabelDark: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    color: '#A3A3A3',
+    fontWeight: '900',
+    letterSpacing: 0.5
+  },
+  summaryValDark: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 28,
+    fontWeight: '900',
+    color: HUD_COLORS.riskHigh,
+    marginVertical: 4
+  },
+  summarySubDark: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    color: '#A3A3A3',
+    fontWeight: '800'
   },
   tabBar: {
     flexDirection: 'row',
-    backgroundColor: '#131B2E',
-    borderRadius: 16,
-    padding: 4,
+    backgroundColor: '#EAE8E2',
+    borderRadius: 0,
+    padding: 3,
     marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#1E293B'
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack
   },
   tabItem: {
     flex: 1,
     paddingVertical: 10,
-    borderRadius: 12,
+    borderRadius: 0,
     alignItems: 'center'
   },
   tabItemActive: {
-    backgroundColor: '#2563EB'
+    backgroundColor: HUD_COLORS.borderBlack
   },
   tabText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#94A3B8'
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 10,
+    fontWeight: '800',
+    color: HUD_COLORS.textBlack,
+    letterSpacing: 0.5
   },
   tabTextActive: {
     color: '#FFFFFF',
-    fontWeight: '700'
+    fontWeight: '900'
   },
   tabContent: {
     gap: 12
   },
-  filterControlsRow: {
+  filterControlsPanel: {
+    backgroundColor: HUD_COLORS.surfaceCard,
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack,
+    padding: 10,
     flexDirection: 'row',
     gap: 10,
     alignItems: 'center',
-    marginBottom: 8
+    marginBottom: 6
   },
   searchInput: {
     flex: 1,
-    backgroundColor: '#131B2E',
-    borderWidth: 1,
-    borderColor: '#334155',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    fontSize: 12,
-    color: '#FFFFFF'
+    backgroundColor: '#FAF9F6',
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack,
+    borderRadius: 0,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 11,
+    color: HUD_COLORS.textBlack
   },
   timeScroll: {
     flexGrow: 0
   },
   timeChip: {
-    backgroundColor: '#1E293B',
+    backgroundColor: '#FFFFFF',
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 12,
+    borderRadius: 0,
     marginRight: 6,
-    borderWidth: 1,
-    borderColor: '#334155'
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack
   },
   timeChipActive: {
-    backgroundColor: '#7C3AED',
-    borderColor: '#A78BFA'
+    backgroundColor: HUD_COLORS.clay
   },
   timeChipText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#94A3B8'
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 10,
+    fontWeight: '800',
+    color: HUD_COLORS.textBlack
   },
   timeChipTextActive: {
     color: '#FFFFFF'
   },
-  sectionSubtitle: {
-    fontSize: 12,
-    color: '#94A3B8',
-    marginBottom: 8,
-    fontWeight: '500'
+  subHeadingRow: {
+    marginBottom: 6
   },
-  rankingCard: {
-    backgroundColor: '#131B2E',
-    borderRadius: 18,
+  subHeadingTag: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    fontWeight: '900',
+    color: HUD_COLORS.clay,
+    letterSpacing: 1
+  },
+  sectionSubtitle: {
+    fontSize: 13,
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack,
+    letterSpacing: -0.5
+  },
+  // RANKING CARDS: Alternating Light & Dark
+  rankingCardLight: {
+    backgroundColor: HUD_COLORS.surfaceCard,
+    borderRadius: 0,
     padding: 14,
-    borderWidth: 1,
-    borderColor: '#1E293B',
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack,
+    marginBottom: 10
+  },
+  rankingCardDark: {
+    backgroundColor: HUD_COLORS.surfaceDark,
+    borderRadius: 0,
+    padding: 14,
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack,
     marginBottom: 10
   },
   rankingCardTop: {
@@ -516,80 +714,200 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10
   },
-  rankBadge: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#090D16',
+  rankBadgeLight: {
+    width: 36,
+    height: 36,
+    borderRadius: 0,
+    backgroundColor: '#000000',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 10
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: '#000000'
   },
-  rankNumber: {
-    color: '#38BDF8',
-    fontWeight: '800',
+  rankBadgeDark: {
+    width: 36,
+    height: 36,
+    borderRadius: 0,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: '#FFFFFF'
+  },
+  rankNumberLight: {
+    color: '#FFFFFF',
+    fontFamily: HUD_FONTS.mono,
+    fontWeight: '900',
+    fontSize: 12
+  },
+  rankNumberDark: {
+    color: '#000000',
+    fontFamily: HUD_FONTS.mono,
+    fontWeight: '900',
     fontSize: 12
   },
   rankInfo: {
     flex: 1
   },
-  rankLocationName: {
-    fontSize: 15,
-    fontWeight: '800',
-    color: '#FFFFFF'
+  rankLocationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingRight: 6
   },
-  rankMetaText: {
+  viewDossierBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderWidth: 1
+  },
+  viewDossierBadgeLight: {
+    backgroundColor: '#FFF8F4',
+    borderColor: HUD_COLORS.clay
+  },
+  viewDossierBadgeDark: {
+    backgroundColor: '#262626',
+    borderColor: '#525252'
+  },
+  viewDossierBadgeText: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 8,
+    fontWeight: '900',
+    letterSpacing: 0.5
+  },
+  viewDossierBadgeTextLight: {
+    color: HUD_COLORS.clay
+  },
+  viewDossierBadgeTextDark: {
+    color: '#F9F8F6'
+  },
+  rankLocationNameLight: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack,
+    letterSpacing: -0.5
+  },
+  rankLocationNameDark: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    letterSpacing: -0.5
+  },
+  rankMetaTextLight: {
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
     fontSize: 11,
-    color: '#94A3B8',
+    color: HUD_COLORS.textMuted,
+    marginTop: 2
+  },
+  rankMetaTextDark: {
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
+    fontSize: 11,
+    color: '#A3A3A3',
     marginTop: 2
   },
   rankScoreBox: {
     alignItems: 'flex-end'
   },
   rankScoreValue: {
-    fontSize: 18,
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 20,
     fontWeight: '900',
     marginBottom: 2
   },
   riskBadge: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 6,
     paddingVertical: 2,
-    borderRadius: 8,
-    borderWidth: 1
+    borderRadius: 0,
+    borderWidth: 1,
+    borderColor: HUD_COLORS.borderBlack
   },
   riskBadgeText: {
-    fontSize: 10,
-    fontWeight: '700'
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    fontWeight: '900',
+    color: '#FFFFFF'
   },
-  meterTrack: {
-    height: 6,
-    backgroundColor: '#090D16',
-    borderRadius: 3,
+  meterTrackLight: {
+    height: 8,
+    backgroundColor: '#EAE8E2',
+    borderWidth: 1,
+    borderColor: HUD_COLORS.borderBlack,
+    borderRadius: 0,
+    overflow: 'hidden',
+    marginBottom: 8
+  },
+  meterTrackDark: {
+    height: 8,
+    backgroundColor: '#262626',
+    borderWidth: 1,
+    borderColor: '#525252',
+    borderRadius: 0,
     overflow: 'hidden',
     marginBottom: 8
   },
   meterFill: {
     height: '100%',
-    borderRadius: 3
+    borderRadius: 0
   },
   rankMetricsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between'
   },
-  rankMetricText: {
-    fontSize: 11,
-    color: '#94A3B8'
+  rankMetricTextLight: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 10,
+    color: HUD_COLORS.textMuted
   },
-  metricBold: {
-    color: '#FFFFFF',
-    fontWeight: '700'
+  rankMetricTextDark: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 10,
+    color: '#A3A3A3'
   },
-  diurnalCard: {
-    backgroundColor: '#131B2E',
-    borderRadius: 18,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: '#1E293B',
+  metricMono: {
+    color: HUD_COLORS.clay,
+    fontWeight: '900'
+  },
+  cardCtaFooter: {
+    marginTop: 8,
+    paddingTop: 6,
+    borderTopWidth: 1
+  },
+  cardCtaFooterLight: {
+    borderTopColor: '#EAE8E2'
+  },
+  cardCtaFooterDark: {
+    borderTopColor: '#262626'
+  },
+  cardCtaFooterText: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 8,
+    fontWeight: '800',
+    letterSpacing: 0.5
+  },
+  cardCtaFooterTextLight: {
+    color: HUD_COLORS.clay
+  },
+  cardCtaFooterTextDark: {
+    color: '#E5A086'
+  },
+  // DIURNAL CARDS: Alternating Light & Dark
+  diurnalCardLight: {
+    backgroundColor: HUD_COLORS.surfaceCard,
+    borderRadius: 0,
+    padding: 16,
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack,
+    marginBottom: 10
+  },
+  diurnalCardDark: {
+    backgroundColor: HUD_COLORS.surfaceDark,
+    borderRadius: 0,
+    padding: 16,
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack,
     marginBottom: 10
   },
   diurnalCardTop: {
@@ -598,64 +916,111 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10
   },
-  diurnalName: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: '#FFFFFF'
+  diurnalNameLight: {
+    fontSize: 15,
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack,
+    letterSpacing: -0.5
   },
-  diurnalWeight: {
+  diurnalNameDark: {
+    fontSize: 15,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    letterSpacing: -0.5
+  },
+  diurnalWeightLight: {
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
     fontSize: 11,
-    color: '#94A3B8',
+    color: HUD_COLORS.textMuted,
+    marginTop: 2
+  },
+  diurnalWeightDark: {
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
+    fontSize: 11,
+    color: '#A3A3A3',
     marginTop: 2
   },
   diurnalScore: {
-    fontSize: 22,
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 24,
     fontWeight: '900'
   },
   diurnalMetaRow: {
     flexDirection: 'row',
     justifyContent: 'space-between'
   },
-  diurnalMetaText: {
-    fontSize: 11,
-    color: '#94A3B8'
+  diurnalMetaTextLight: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 10,
+    color: HUD_COLORS.textMuted,
+    fontWeight: '700'
+  },
+  diurnalMetaTextDark: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 10,
+    color: '#A3A3A3',
+    fontWeight: '700'
   },
   findingCard: {
-    backgroundColor: '#07241A',
-    borderRadius: 16,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: '#10B981',
+    backgroundColor: HUD_COLORS.clay,
+    borderRadius: 0,
+    padding: 16,
+    borderWidth: 3,
+    borderColor: HUD_COLORS.borderBlack,
     marginTop: 10
   },
+  findingTag: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    fontWeight: '900',
+    color: '#FFE2D7',
+    letterSpacing: 1
+  },
   findingTitle: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: '#10B981',
-    marginBottom: 4
+    fontSize: 16,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    marginVertical: 4,
+    letterSpacing: -0.5
   },
   findingText: {
     fontSize: 12,
-    color: '#D1FAE5',
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
+    color: '#FFF5F0',
     lineHeight: 18
   },
-  infraCard: {
-    backgroundColor: '#131B2E',
-    borderRadius: 18,
+  // INFRASTRUCTURE CARDS: Alternating Light & Dark
+  infraCardLight: {
+    backgroundColor: HUD_COLORS.surfaceCard,
+    borderRadius: 0,
     padding: 16,
-    borderWidth: 1,
-    borderColor: '#1E293B',
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack,
     marginBottom: 12
   },
-  infraTitle: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: '#FFFFFF',
-    marginBottom: 6
+  infraTagLight: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    fontWeight: '900',
+    color: HUD_COLORS.clay,
+    letterSpacing: 1
   },
-  infraDesc: {
+  infraTitleLight: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack,
+    marginTop: 2,
+    marginBottom: 6,
+    letterSpacing: -0.5
+  },
+  infraDescLight: {
     fontSize: 12,
-    color: '#94A3B8',
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
+    color: HUD_COLORS.textMuted,
     lineHeight: 18,
     marginBottom: 12
   },
@@ -663,24 +1028,78 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12
   },
-  infraStatBox: {
+  infraStatBoxLight: {
     flex: 1,
-    backgroundColor: '#090D16',
-    borderRadius: 12,
+    backgroundColor: '#FAF9F6',
+    borderRadius: 0,
     padding: 12,
-    borderWidth: 1,
-    borderColor: '#334155'
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack
   },
-  infraStatNumber: {
+  infraStatNumberLight: {
+    fontFamily: HUD_FONTS.mono,
     fontSize: 14,
-    fontWeight: '800',
-    color: '#FFFFFF',
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack,
     marginBottom: 2
   },
-  infraStatLabel: {
-    fontSize: 11,
-    color: '#10B981',
-    fontWeight: '600'
+  infraStatLabelSafe: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 10,
+    color: HUD_COLORS.riskLow,
+    fontWeight: '900'
+  },
+  infraStatLabelDanger: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 10,
+    color: HUD_COLORS.riskHigh,
+    fontWeight: '900'
+  },
+  infraCardDark: {
+    backgroundColor: HUD_COLORS.surfaceDark,
+    borderRadius: 0,
+    padding: 16,
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack,
+    marginBottom: 12
+  },
+  infraTagDark: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    fontWeight: '900',
+    color: HUD_COLORS.clay,
+    letterSpacing: 1
+  },
+  infraTitleDark: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    marginTop: 2,
+    marginBottom: 6,
+    letterSpacing: -0.5
+  },
+  infraDescDark: {
+    fontSize: 12,
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
+    color: '#A3A3A3',
+    lineHeight: 18,
+    marginBottom: 12
+  },
+  infraStatBoxDark: {
+    flex: 1,
+    backgroundColor: '#000000',
+    borderRadius: 0,
+    padding: 12,
+    borderWidth: 2,
+    borderColor: '#404040'
+  },
+  infraStatNumberDark: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 14,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    marginBottom: 2
   }
 });
 

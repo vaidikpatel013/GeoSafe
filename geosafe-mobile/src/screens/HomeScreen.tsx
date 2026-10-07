@@ -17,6 +17,7 @@ import { CurrentAreaRiskCard } from '../components/RiskCard/CurrentAreaRiskCard'
 import { HoldForSOSButton } from '../components/SOS/HoldForSOSButton';
 import { GuardianTrackingView } from '../components/Guardian/GuardianTrackingView';
 import { SafetyZone } from '../types';
+import { HUD_COLORS, HUD_FONTS, HUD_SHADOWS } from '../theme/hudTheme';
 
 interface HomeScreenProps {
   onNavigateToAnalytics?: () => void;
@@ -49,25 +50,25 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   } = useEmergency();
 
   const [guardianModalVisible, setGuardianModalVisible] = useState(false);
-  const [fakeCallPickerVisible, setFakeCallPickerVisible] = useState(false);
   const [selectedMapZone, setSelectedMapZone] = useState<SafetyZone | null>(null);
 
   const displayZone = selectedMapZone || nearestZone;
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#0F172A" />
+      <StatusBar barStyle="dark-content" backgroundColor={HUD_COLORS.canvas} />
 
-      {/* Top Header Bar */}
+      {/* Top Header Bar: Neo-Brutalist Tactical HUD */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <View style={styles.logoBadge}>
+          <View style={[styles.logoBadge, HUD_SHADOWS.hardSm]}>
             <Text style={styles.logoBadgeIcon}>🛡️</Text>
           </View>
           <View>
-            <Text style={styles.appName}>GeoSafe</Text>
+            <Text style={styles.headerTag}>[HUD CONSOLE // REAL-TIME]</Text>
+            <Text style={styles.appName}>GEOSAFE</Text>
             <Text style={styles.userGreeting}>
-              {user?.name ? `Hi, ${user.name.split(' ')[0]}` : 'Real-Time Protection'}
+              {user?.name ? `Operator: ${user.name.split(' ')[0].toUpperCase()}` : 'Real-Time Protection Active'}
             </Text>
           </View>
         </View>
@@ -75,7 +76,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         <View style={styles.headerActions}>
           {/* Quick Guardian Monitor Button */}
           <TouchableOpacity
-            style={styles.headerIconButton}
+            style={[styles.headerIconButton, HUD_SHADOWS.hardSm]}
             onPress={() => setGuardianModalVisible(true)}
             activeOpacity={0.8}
           >
@@ -85,7 +86,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           {/* Settings / Profile Button */}
           {onNavigateToSettings && (
             <TouchableOpacity
-              style={styles.headerIconButton}
+              style={[styles.headerIconButton, HUD_SHADOWS.hardSm]}
               onPress={onNavigateToSettings}
               activeOpacity={0.8}
             >
@@ -101,7 +102,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         showsVerticalScrollIndicator={false}
       >
         {/* City & Time-of-Day Quick Filter Chips */}
-        <View style={styles.filterSection}>
+        <View style={[styles.filterSection, HUD_SHADOWS.hard]}>
+          <View style={styles.filterSectionHeader}>
+            <Text style={styles.filterTag}>[REGIONAL & TEMPORAL SENSORS]</Text>
+          </View>
+
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipScroll}>
             {/* City Chips */}
             {(['All', 'Mumbai', 'Delhi'] as const).map((city) => (
@@ -109,6 +114,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 key={city}
                 style={[styles.filterChip, cityFilter === city && styles.filterChipActive]}
                 onPress={() => setCityFilter(city)}
+                activeOpacity={0.8}
               >
                 <Text
                   style={[
@@ -116,7 +122,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                     cityFilter === city && styles.filterChipTextActive
                   ]}
                 >
-                  {city === 'All' ? '🌐 All Cities' : city === 'Mumbai' ? '🏙️ Mumbai' : '🏛️ Delhi'}
+                  {city === 'All' ? '🌐 ALL METROS' : city === 'Mumbai' ? '🏙️ MUMBAI' : '🏛️ DELHI'}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -130,6 +136,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                   timeOfDayFilter === time && styles.filterChipTimeActive
                 ]}
                 onPress={() => setTimeOfDayFilter(time)}
+                activeOpacity={0.8}
               >
                 <Text
                   style={[
@@ -137,7 +144,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                     timeOfDayFilter === time && styles.filterChipTextActive
                   ]}
                 >
-                  {time === 'Night' ? '🌙 Night' : time === 'Evening' ? '🌇 Eve' : time}
+                  {time === 'Night' ? '🌙 NIGHT' : time === 'Evening' ? '🌇 EVENING' : time.toUpperCase()}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -145,24 +152,30 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
           {/* Quick Demo Location Jumper (Mumbai vs Delhi) */}
           <View style={styles.demoJumperRow}>
-            <Text style={styles.demoJumperLabel}>Demo Jump:</Text>
+            <Text style={styles.demoJumperLabel}>DEMO GPS TELEPORT:</Text>
             <TouchableOpacity
               style={styles.demoPill}
               onPress={() => simulateLocation('Mumbai')}
+              activeOpacity={0.8}
             >
-              <Text style={styles.demoPillText}>📍 Mumbai (Bandra)</Text>
+              <Text style={styles.demoPillText}>📍 MUMBAI (BANDRA)</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.demoPill}
               onPress={() => simulateLocation('Delhi')}
+              activeOpacity={0.8}
             >
-              <Text style={styles.demoPillText}>📍 Delhi (CP)</Text>
+              <Text style={styles.demoPillText}>📍 DELHI (CP)</Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* Interactive Map Component */}
-        <View style={styles.mapContainer}>
+        {/* Interactive Map Component: Framed in 3px Solid Black Border & Hard Shadow */}
+        <View style={[styles.mapContainer, HUD_SHADOWS.hardLg]}>
+          <View style={styles.mapHudHeader}>
+            <Text style={styles.mapHudTag}>[LIVE RADAR // SURVEILLANCE OVERLAY]</Text>
+            <Text style={styles.mapHudLive}>MONITORING</Text>
+          </View>
           <SafeZoneMap
             userLocation={userLocation}
             zones={filteredZones}
@@ -180,56 +193,63 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
         {/* Core Safety Utilities Section */}
         <View style={styles.utilitiesSection}>
-          <Text style={styles.sectionTitle}>Rapid Response Utilities</Text>
+          <View style={styles.utilityHeadingRow}>
+            <Text style={styles.utilityHeadingTag}>[TACTICAL INTERRUPT UTILITIES]</Text>
+            <Text style={styles.sectionTitle}>RAPID RESPONSE DISPATCH</Text>
+          </View>
 
           <View style={styles.utilityCardsRow}>
             {/* Fake Call Trigger Card */}
-            <View style={styles.utilityCard}>
+            <View style={[styles.utilityCard, HUD_SHADOWS.hard]}>
               <View style={styles.utilityCardTop}>
                 <Text style={styles.utilityIcon}>📞</Text>
                 <View style={styles.utilityTextContainer}>
-                  <Text style={styles.utilityTitle}>Fake Incoming Call</Text>
+                  <Text style={styles.utilityTitle}>FAKE INCOMING CALL PROTOCOL</Text>
                   <Text style={styles.utilitySub}>
                     {fakeCallTimerRemaining !== null
-                      ? `Ringing in ${fakeCallTimerRemaining}s...`
-                      : 'Simulate escape call'}
+                      ? `RING DISPATCH IN ${fakeCallTimerRemaining}s...`
+                      : 'Synthesize immediate discreet escape ring'}
                   </Text>
                 </View>
               </View>
 
               {fakeCallTimerRemaining !== null ? (
                 <TouchableOpacity
-                  style={styles.cancelCallButton}
+                  style={[styles.cancelCallButton, HUD_SHADOWS.hardSm]}
                   onPress={cancelFakeCallTimer}
                   activeOpacity={0.8}
                 >
-                  <Text style={styles.cancelCallText}>Cancel Call ({fakeCallTimerRemaining}s)</Text>
+                  <Text style={styles.cancelCallText}>CANCEL DISPATCH ({fakeCallTimerRemaining}s) ✕</Text>
                 </TouchableOpacity>
               ) : (
                 <View style={styles.timerButtonGroup}>
                   <TouchableOpacity
-                    style={styles.timerButton}
+                    style={[styles.timerButton, styles.timerButtonNow]}
                     onPress={() => scheduleFakeCall(0)}
+                    activeOpacity={0.8}
                   >
-                    <Text style={styles.timerButtonText}>Now</Text>
+                    <Text style={styles.timerButtonTextNow}>NOW ↗</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.timerButton}
                     onPress={() => scheduleFakeCall(5)}
+                    activeOpacity={0.8}
                   >
-                    <Text style={styles.timerButtonText}>5s</Text>
+                    <Text style={styles.timerButtonText}>05s ↗</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.timerButton}
                     onPress={() => scheduleFakeCall(10)}
+                    activeOpacity={0.8}
                   >
-                    <Text style={styles.timerButtonText}>10s</Text>
+                    <Text style={styles.timerButtonText}>10s ↗</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.timerButton}
                     onPress={() => scheduleFakeCall(30)}
+                    activeOpacity={0.8}
                   >
-                    <Text style={styles.timerButtonText}>30s</Text>
+                    <Text style={styles.timerButtonText}>30s ↗</Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -240,20 +260,21 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         {/* One-Tap Guardian SOS Button with 5s Cancel Countdown */}
         <HoldForSOSButton onOpenGuardianTracker={() => setGuardianModalVisible(true)} />
 
-        {/* Quick link to Safety Analytics Screen */}
+        {/* Quick link to Safety Analytics Screen: High-Contrast Clay Card */}
         {onNavigateToAnalytics && (
           <TouchableOpacity
-            style={styles.analyticsBanner}
+            style={[styles.analyticsBanner, HUD_SHADOWS.hard]}
             onPress={onNavigateToAnalytics}
             activeOpacity={0.8}
           >
-            <View>
-              <Text style={styles.analyticsTitle}>📊 Urban Safety Analytics</Text>
+            <View style={{ flex: 1, paddingRight: 10 }}>
+              <Text style={styles.analyticsTag}>[DATA INTELLIGENCE]</Text>
+              <Text style={styles.analyticsTitle}>URBAN SAFETY ANALYTICS ↗</Text>
               <Text style={styles.analyticsSub}>
-                Explore Delhi & Mumbai incident severity, time-of-day weights, CCTV metrics
+                Explore Delhi & Mumbai incident severity, time-of-day multipliers & CCTV regression models
               </Text>
             </View>
-            <Text style={styles.analyticsArrow}>→</Text>
+            <Text style={styles.analyticsArrow}>↗</Text>
           </TouchableOpacity>
         )}
       </ScrollView>
@@ -264,7 +285,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         animationType="slide"
         onRequestClose={() => setGuardianModalVisible(false)}
       >
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#F8FAFC' }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: HUD_COLORS.canvas }}>
           <GuardianTrackingView
             emergencyId={activeEmergencyId}
             onClose={() => setGuardianModalVisible(false)}
@@ -278,17 +299,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#0F172A'
+    backgroundColor: HUD_COLORS.canvas
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#0F172A',
-    borderBottomWidth: 1,
-    borderBottomColor: '#1E293B'
+    paddingVertical: 14,
+    backgroundColor: HUD_COLORS.canvas,
+    borderBottomWidth: 2,
+    borderBottomColor: HUD_COLORS.borderBlack
   },
   headerLeft: {
     flexDirection: 'row',
@@ -296,84 +317,108 @@ const styles = StyleSheet.create({
     gap: 12
   },
   logoBadge: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#1E293B',
-    borderWidth: 1.5,
-    borderColor: '#3B82F6',
+    width: 44,
+    height: 44,
+    borderRadius: 0,
+    backgroundColor: HUD_COLORS.clay,
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack,
     justifyContent: 'center',
     alignItems: 'center'
   },
   logoBadgeIcon: {
-    fontSize: 20
+    fontSize: 22
+  },
+  headerTag: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    fontWeight: '900',
+    color: HUD_COLORS.clay,
+    letterSpacing: 1
   },
   appName: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '900',
-    color: '#FFFFFF',
-    letterSpacing: 0.5
+    color: HUD_COLORS.textBlack,
+    letterSpacing: -0.5
   },
   userGreeting: {
     fontSize: 11,
-    color: '#94A3B8',
-    fontWeight: '500'
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
+    color: HUD_COLORS.textMuted
   },
   headerActions: {
     flexDirection: 'row',
     gap: 8
   },
   headerIconButton: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: '#1E293B',
+    width: 40,
+    height: 40,
+    borderRadius: 0,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack,
     justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#334155'
+    alignItems: 'center'
   },
   headerIconText: {
     fontSize: 18
   },
   scrollContainer: {
-    flex: 1,
-    backgroundColor: '#F1F5F9'
+    flex: 1
   },
   scrollContent: {
-    paddingBottom: 40
+    padding: 16,
+    paddingBottom: 40,
+    maxWidth: 960,
+    alignSelf: 'center',
+    width: '100%'
   },
   filterSection: {
-    backgroundColor: '#0F172A',
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    borderBottomLeftRadius: 18,
-    borderBottomRightRadius: 18
+    backgroundColor: HUD_COLORS.surfaceCard,
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack,
+    borderRadius: 0,
+    padding: 14,
+    marginBottom: 16
+  },
+  filterSectionHeader: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E5',
+    paddingBottom: 6,
+    marginBottom: 10
+  },
+  filterTag: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    fontWeight: '900',
+    color: HUD_COLORS.clay,
+    letterSpacing: 1
   },
   chipScroll: {
-    marginBottom: 8
+    marginBottom: 10
   },
   filterChip: {
-    backgroundColor: '#1E293B',
+    backgroundColor: '#FAF9F6',
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 16,
+    borderRadius: 0,
     marginRight: 6,
-    borderWidth: 1,
-    borderColor: '#334155'
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack
   },
   filterChipActive: {
-    backgroundColor: '#2563EB',
-    borderColor: '#60A5FA'
+    backgroundColor: HUD_COLORS.borderBlack
   },
   filterChipTimeActive: {
-    backgroundColor: '#7C3AED',
-    borderColor: '#A78BFA'
+    backgroundColor: HUD_COLORS.clay
   },
   filterChipText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#94A3B8'
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 10,
+    fontWeight: '800',
+    color: HUD_COLORS.textBlack
   },
   filterChipTextActive: {
     color: '#FFFFFF'
@@ -381,130 +426,194 @@ const styles = StyleSheet.create({
   demoJumperRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6
+    gap: 8,
+    marginTop: 4
   },
   demoJumperLabel: {
-    fontSize: 10,
-    color: '#64748B',
-    fontWeight: '700',
-    textTransform: 'uppercase'
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    color: HUD_COLORS.textMuted,
+    fontWeight: '900',
+    letterSpacing: 0.5
   },
   demoPill: {
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    paddingHorizontal: 8,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 8
+    borderRadius: 0,
+    borderWidth: 1.5,
+    borderColor: HUD_COLORS.borderBlack
   },
   demoPillText: {
+    fontFamily: HUD_FONTS.mono,
     fontSize: 10,
-    color: '#93C5FD',
-    fontWeight: '600'
+    fontWeight: '800',
+    color: HUD_COLORS.textBlack
   },
   mapContainer: {
-    paddingHorizontal: 16,
-    marginTop: 12
+    borderRadius: 0,
+    overflow: 'hidden',
+    borderWidth: 3,
+    borderColor: HUD_COLORS.borderBlack,
+    marginBottom: 16
+  },
+  mapHudHeader: {
+    backgroundColor: HUD_COLORS.surfaceDark,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderBottomWidth: 2,
+    borderBottomColor: HUD_COLORS.borderBlack
+  },
+  mapHudTag: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 10,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    letterSpacing: 1
+  },
+  mapHudLive: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    fontWeight: '900',
+    color: HUD_COLORS.riskLow
   },
   utilitiesSection: {
-    paddingHorizontal: 16,
-    marginTop: 20
+    marginTop: 18,
+    marginBottom: 8
+  },
+  utilityHeadingRow: {
+    marginBottom: 8
+  },
+  utilityHeadingTag: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    fontWeight: '900',
+    color: HUD_COLORS.clay,
+    letterSpacing: 1
   },
   sectionTitle: {
-    fontSize: 15,
-    fontWeight: '800',
-    color: '#1E293B',
-    marginBottom: 10
+    fontSize: 18,
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack,
+    letterSpacing: -0.5
   },
   utilityCardsRow: {
-    flexDirection: 'row',
     gap: 12
   },
   utilityCard: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 14,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 2
+    backgroundColor: HUD_COLORS.surfaceCard,
+    borderRadius: 0,
+    padding: 16,
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack
   },
   utilityCardTop: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 12,
     marginBottom: 12
   },
   utilityIcon: {
-    fontSize: 24
+    fontSize: 26
   },
   utilityTextContainer: {
     flex: 1
   },
   utilityTitle: {
     fontSize: 14,
-    fontWeight: '700',
-    color: '#0F172A'
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack,
+    letterSpacing: -0.5
   },
   utilitySub: {
     fontSize: 11,
-    color: '#64748B',
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
+    color: HUD_COLORS.textMuted,
     marginTop: 2
   },
-  timerButtonGroup: {
-    flexDirection: 'row',
-    gap: 6
-  },
-  timerButton: {
-    flex: 1,
-    backgroundColor: '#F1F5F9',
-    paddingVertical: 8,
-    borderRadius: 8,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E2E8F0'
-  },
-  timerButtonText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#334155'
-  },
   cancelCallButton: {
-    backgroundColor: '#EF4444',
-    paddingVertical: 8,
-    borderRadius: 8,
-    alignItems: 'center'
+    backgroundColor: HUD_COLORS.riskHigh,
+    paddingVertical: 10,
+    borderRadius: 0,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#000000'
   },
   cancelCallText: {
     color: '#FFFFFF',
-    fontWeight: '700',
-    fontSize: 12
+    fontFamily: HUD_FONTS.mono,
+    fontWeight: '900',
+    fontSize: 11
+  },
+  timerButtonGroup: {
+    flexDirection: 'row',
+    gap: 8
+  },
+  timerButton: {
+    flex: 1,
+    backgroundColor: '#FAF9F6',
+    paddingVertical: 10,
+    borderRadius: 0,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack
+  },
+  timerButtonNow: {
+    backgroundColor: HUD_COLORS.clay
+  },
+  timerButtonText: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 11,
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack
+  },
+  timerButtonTextNow: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 11,
+    fontWeight: '900',
+    color: '#FFFFFF'
   },
   analyticsBanner: {
-    marginHorizontal: 16,
-    marginTop: 12,
-    backgroundColor: '#1E293B',
-    borderRadius: 16,
-    padding: 14,
+    backgroundColor: HUD_COLORS.clay,
+    borderRadius: 0,
+    padding: 16,
+    marginTop: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: HUD_COLORS.borderBlack
+  },
+  analyticsTag: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    fontWeight: '900',
+    color: '#FFE2D7',
+    letterSpacing: 1,
+    marginBottom: 2
   },
   analyticsTitle: {
+    fontSize: 16,
+    fontWeight: '900',
     color: '#FFFFFF',
-    fontSize: 13,
-    fontWeight: '700'
+    letterSpacing: -0.5
   },
   analyticsSub: {
-    color: '#94A3B8',
-    fontSize: 10,
-    marginTop: 2,
-    maxWidth: 280
+    fontSize: 11,
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
+    color: '#FFE2D7',
+    marginTop: 2
   },
   analyticsArrow: {
-    color: '#38BDF8',
-    fontSize: 18,
-    fontWeight: '800'
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 24,
+    fontWeight: '900',
+    color: '#FFFFFF'
   }
 });
 

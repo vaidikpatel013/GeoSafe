@@ -9,6 +9,7 @@ import {
   StatusBar
 } from 'react-native';
 import { useEmergency } from '../../context/EmergencyContext';
+import { HUD_COLORS, HUD_FONTS, HUD_SHADOWS } from '../../theme/hudTheme';
 
 export const FakeCallModal: React.FC = () => {
   const {
@@ -56,22 +57,26 @@ export const FakeCallModal: React.FC = () => {
       statusBarTranslucent
     >
       <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="light-content" backgroundColor="#0B132B" />
+        <StatusBar barStyle="light-content" backgroundColor={HUD_COLORS.surfaceDark} />
 
-        {/* Top Caller Info */}
+        {/* Top Caller Info: Stark High-Contrast Typography */}
         <View style={styles.callerInfoContainer}>
           <Text style={styles.callTypeLabel}>
-            {isFakeCallConnected ? 'Cellular Call Connected' : 'Incoming Call...'}
+            {isFakeCallConnected
+              ? '[CELLULAR PROTOCOL // CONNECTED]'
+              : '[CELLULAR PROTOCOL // INCOMING RING]'}
           </Text>
-          <Text style={styles.callerName}>{fakeCallSettings.callerName}</Text>
+          <Text style={styles.callerName}>{fakeCallSettings.callerName.toUpperCase()}</Text>
           <Text style={styles.callerNumber}>
-            {isFakeCallConnected ? formatDuration(callDuration) : fakeCallSettings.callerNumber}
+            {isFakeCallConnected
+              ? `DURATION: ${formatDuration(callDuration)}`
+              : fakeCallSettings.callerNumber}
           </Text>
         </View>
 
-        {/* Caller Avatar / Graphic */}
+        {/* Caller Avatar: Sharp Brutalist Tile */}
         <View style={styles.avatarContainer}>
-          <View style={styles.avatarCircle}>
+          <View style={[styles.avatarSquare, HUD_SHADOWS.hardClay]}>
             <Text style={styles.avatarLetter}>
               {fakeCallSettings.callerName.charAt(0).toUpperCase()}
             </Text>
@@ -83,85 +88,92 @@ export const FakeCallModal: React.FC = () => {
           <View style={styles.inCallGrid}>
             <View style={styles.inCallGridRow}>
               <TouchableOpacity style={styles.utilityButton}>
-                <Text style={styles.utilityIcon}>🔇</Text>
-                <Text style={styles.utilityLabel}>Mute</Text>
+                <View style={styles.utilityIconBox}>
+                  <Text style={styles.utilityIcon}>🔇</Text>
+                </View>
+                <Text style={styles.utilityLabel}>MUTE</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.utilityButton}>
-                <Text style={styles.utilityIcon}>🔢</Text>
-                <Text style={styles.utilityLabel}>Keypad</Text>
+                <View style={styles.utilityIconBox}>
+                  <Text style={styles.utilityIcon}>🔢</Text>
+                </View>
+                <Text style={styles.utilityLabel}>KEYPAD</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.utilityButton}>
-                <Text style={styles.utilityIcon}>🔊</Text>
-                <Text style={styles.utilityLabel}>Speaker</Text>
+                <View style={styles.utilityIconBox}>
+                  <Text style={styles.utilityIcon}>🔊</Text>
+                </View>
+                <Text style={styles.utilityLabel}>SPEAKER</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.inCallGridRow}>
               <TouchableOpacity style={styles.utilityButton}>
-                <Text style={styles.utilityIcon}>➕</Text>
-                <Text style={styles.utilityLabel}>Add Call</Text>
+                <View style={styles.utilityIconBox}>
+                  <Text style={styles.utilityIcon}>➕</Text>
+                </View>
+                <Text style={styles.utilityLabel}>ADD CALL</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.utilityButton}>
-                <Text style={styles.utilityIcon}>📹</Text>
-                <Text style={styles.utilityLabel}>FaceTime</Text>
+                <View style={styles.utilityIconBox}>
+                  <Text style={styles.utilityIcon}>📹</Text>
+                </View>
+                <Text style={styles.utilityLabel}>FACETIME</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.utilityButton}>
-                <Text style={styles.utilityIcon}>👤</Text>
-                <Text style={styles.utilityLabel}>Contacts</Text>
+                <View style={styles.utilityIconBox}>
+                  <Text style={styles.utilityIcon}>👤</Text>
+                </View>
+                <Text style={styles.utilityLabel}>CONTACTS</Text>
               </TouchableOpacity>
             </View>
 
-            {/* End Call Button */}
+            {/* End Call Button: Ultra-tactile Block Crimson Button */}
             <View style={styles.endCallContainer}>
               <TouchableOpacity
-                style={styles.declineButton}
+                style={[styles.endCallBlockButton, HUD_SHADOWS.hard]}
                 onPress={declineFakeCall}
                 activeOpacity={0.8}
               >
-                <Text style={styles.callButtonIcon}>📞</Text>
+                <Text style={styles.endCallText}>TERMINATE CALL [DISCONNECT] ✕</Text>
               </TouchableOpacity>
-              <Text style={styles.actionLabel}>End Call</Text>
             </View>
           </View>
         ) : (
-          /* Incoming Call Actions: Accept & Decline */
+          /* Incoming Call Actions: Accept & Decline Block Buttons */
           <View style={styles.actionsContainer}>
             <View style={styles.quickUtilitiesRow}>
               <TouchableOpacity style={styles.reminderButton}>
                 <Text style={styles.reminderIcon}>⏰</Text>
-                <Text style={styles.reminderLabel}>Remind Me</Text>
+                <Text style={styles.reminderLabel}>REMIND ME</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.reminderButton}>
                 <Text style={styles.reminderIcon}>💬</Text>
-                <Text style={styles.reminderLabel}>Message</Text>
+                <Text style={styles.reminderLabel}>MESSAGE</Text>
               </TouchableOpacity>
             </View>
 
             <View style={styles.callResponseRow}>
-              {/* Decline Button */}
-              <View style={styles.buttonWrapper}>
-                <TouchableOpacity
-                  style={styles.declineButton}
-                  onPress={declineFakeCall}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.callButtonIcon}>📞</Text>
-                </TouchableOpacity>
-                <Text style={styles.actionLabel}>Decline</Text>
-              </View>
+              {/* Decline Button: Solid Crimson Block */}
+              <TouchableOpacity
+                style={[styles.declineBlockButton, HUD_SHADOWS.hard]}
+                onPress={declineFakeCall}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.declineIcon}>📞</Text>
+                <Text style={styles.responseButtonText}>DECLINE ✕</Text>
+              </TouchableOpacity>
 
-              {/* Accept Button */}
-              <View style={styles.buttonWrapper}>
-                <TouchableOpacity
-                  style={styles.acceptButton}
-                  onPress={acceptFakeCall}
-                  activeOpacity={0.8}
-                >
-                  <Text style={[styles.callButtonIcon, { transform: [{ rotate: '135deg' }] }]}>
-                    📞
-                  </Text>
-                </TouchableOpacity>
-                <Text style={styles.actionLabel}>Accept</Text>
-              </View>
+              {/* Accept Button: Solid Emerald Block */}
+              <TouchableOpacity
+                style={[styles.acceptBlockButton, HUD_SHADOWS.hard]}
+                onPress={acceptFakeCall}
+                activeOpacity={0.8}
+              >
+                <Text style={[styles.acceptIcon, { transform: [{ rotate: '135deg' }] }]}>
+                  📞
+                </Text>
+                <Text style={styles.responseButtonTextAccept}>ACCEPT ↗</Text>
+              </TouchableOpacity>
             </View>
           </View>
         )}
@@ -173,64 +185,64 @@ export const FakeCallModal: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: HUD_COLORS.surfaceDark,
     justifyContent: 'space-between',
-    paddingVertical: 50,
-    paddingHorizontal: 24
+    paddingVertical: 40,
+    paddingHorizontal: 20
   },
   callerInfoContainer: {
     alignItems: 'center',
     marginTop: 20
   },
   callTypeLabel: {
-    color: '#94A3B8',
-    fontSize: 14,
-    fontWeight: '500',
+    fontFamily: HUD_FONTS.mono,
+    color: HUD_COLORS.clay,
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 1,
     marginBottom: 8
   },
   callerName: {
     color: '#FFFFFF',
-    fontSize: 34,
-    fontWeight: '700',
+    fontSize: 32,
+    fontWeight: '900',
+    letterSpacing: -0.5,
     marginBottom: 6
   },
   callerNumber: {
-    color: '#CBD5E1',
-    fontSize: 16,
-    fontWeight: '500'
+    fontFamily: HUD_FONTS.mono,
+    color: '#D4D4D4',
+    fontSize: 14,
+    fontWeight: '700'
   },
   avatarContainer: {
     alignItems: 'center',
-    marginVertical: 30
+    marginVertical: 20
   },
-  avatarCircle: {
+  avatarSquare: {
     width: 120,
     height: 120,
-    borderRadius: 60,
-    backgroundColor: '#1E293B',
-    borderWidth: 2,
-    borderColor: '#334155',
+    borderRadius: 0,
+    backgroundColor: '#1E1E1E',
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
     justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 8
+    alignItems: 'center'
   },
   avatarLetter: {
-    color: '#E2E8F0',
-    fontSize: 48,
-    fontWeight: '800'
+    color: '#FFFFFF',
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 54,
+    fontWeight: '900'
   },
   actionsContainer: {
     width: '100%',
-    paddingBottom: 30
+    paddingBottom: 20
   },
   quickUtilitiesRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: 40
+    marginBottom: 30
   },
   reminderButton: {
     alignItems: 'center'
@@ -240,52 +252,61 @@ const styles = StyleSheet.create({
     marginBottom: 4
   },
   reminderLabel: {
-    color: '#94A3B8',
-    fontSize: 12
+    fontFamily: HUD_FONTS.mono,
+    color: '#A3A3A3',
+    fontSize: 10,
+    fontWeight: '700'
   },
   callResponseRow: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center'
+    gap: 16,
+    width: '100%'
   },
-  buttonWrapper: {
-    alignItems: 'center'
-  },
-  declineButton: {
-    width: 76,
-    height: 76,
-    borderRadius: 38,
-    backgroundColor: '#EF4444',
-    justifyContent: 'center',
+  declineBlockButton: {
+    flex: 1,
+    backgroundColor: HUD_COLORS.riskHigh,
+    paddingVertical: 18,
+    borderRadius: 0,
     alignItems: 'center',
-    shadowColor: '#EF4444',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.4,
-    shadowRadius: 10,
-    elevation: 8
-  },
-  acceptButton: {
-    width: 76,
-    height: 76,
-    borderRadius: 38,
-    backgroundColor: '#10B981',
     justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#10B981',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.4,
-    shadowRadius: 10,
-    elevation: 8
+    borderWidth: 3,
+    borderColor: '#000000',
+    flexDirection: 'row',
+    gap: 8
   },
-  callButtonIcon: {
-    fontSize: 32,
+  acceptBlockButton: {
+    flex: 1,
+    backgroundColor: HUD_COLORS.riskLow,
+    paddingVertical: 18,
+    borderRadius: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 3,
+    borderColor: '#000000',
+    flexDirection: 'row',
+    gap: 8
+  },
+  declineIcon: {
+    fontSize: 20,
     color: '#FFFFFF'
   },
-  actionLabel: {
+  acceptIcon: {
+    fontSize: 20,
+    color: '#000000'
+  },
+  responseButtonText: {
+    fontFamily: HUD_FONTS.mono,
     color: '#FFFFFF',
-    marginTop: 10,
-    fontSize: 14,
-    fontWeight: '600'
+    fontSize: 13,
+    fontWeight: '900',
+    letterSpacing: 0.5
+  },
+  responseButtonTextAccept: {
+    fontFamily: HUD_FONTS.mono,
+    color: '#000000',
+    fontSize: 13,
+    fontWeight: '900',
+    letterSpacing: 0.5
   },
   inCallGrid: {
     width: '100%',
@@ -294,23 +315,50 @@ const styles = StyleSheet.create({
   inCallGridRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: 24
+    marginBottom: 18
   },
   utilityButton: {
     alignItems: 'center',
-    width: 70
+    width: 80
   },
-  utilityIcon: {
-    fontSize: 26,
+  utilityIconBox: {
+    width: 54,
+    height: 54,
+    backgroundColor: '#262626',
+    borderWidth: 2,
+    borderColor: '#404040',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 6
   },
+  utilityIcon: {
+    fontSize: 22
+  },
   utilityLabel: {
-    color: '#94A3B8',
-    fontSize: 12
+    fontFamily: HUD_FONTS.mono,
+    color: '#A3A3A3',
+    fontSize: 9,
+    fontWeight: '800'
   },
   endCallContainer: {
+    width: '100%',
+    marginTop: 10
+  },
+  endCallBlockButton: {
+    backgroundColor: HUD_COLORS.riskHigh,
+    paddingVertical: 16,
+    borderRadius: 0,
     alignItems: 'center',
-    marginTop: 16
+    borderWidth: 3,
+    borderColor: '#000000',
+    width: '100%'
+  },
+  endCallText: {
+    fontFamily: HUD_FONTS.mono,
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '900',
+    letterSpacing: 1
   }
 });
 

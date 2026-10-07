@@ -11,7 +11,9 @@ import {
 import { useSafety } from '../context/SafetyContext';
 import { SafeZoneMap } from '../components/Map/SafeZoneMap';
 import { CurrentAreaRiskCard } from '../components/RiskCard/CurrentAreaRiskCard';
+import { LocationCrimeModal } from '../components/Analytics/LocationCrimeModal';
 import { SafetyZone } from '../types';
+import { HUD_COLORS, HUD_FONTS, HUD_SHADOWS } from '../theme/hudTheme';
 
 interface ZoneExplorerScreenProps {
   onNavigateToNavigator?: (selectedLocation?: string) => void;
@@ -37,9 +39,9 @@ export const ZoneExplorerScreen: React.FC<ZoneExplorerScreenProps> = ({
 
   const [searchQuery, setSearchQuery] = useState('');
   const [inspectedZone, setInspectedZone] = useState<SafetyZone | null>(null);
+  const [dossierZone, setDossierZone] = useState<SafetyZone | null>(null);
 
   const currentCity = cityFilter === 'All' ? 'Mumbai' : cityFilter;
-
   const displayZone = inspectedZone || nearestZone;
 
   // Search filter
@@ -54,21 +56,22 @@ export const ZoneExplorerScreen: React.FC<ZoneExplorerScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Top Header */}
+      {/* Top Header: Oversized Display Type & Serif Italic Subtitle */}
       <View style={styles.header}>
         <View style={styles.brandRow}>
-          <View style={styles.brandBadge}>
+          <View style={[styles.brandBadge, HUD_SHADOWS.hardSm]}>
             <Text style={styles.brandBadgeIcon}>🗺️</Text>
           </View>
           <View>
-            <Text style={styles.headerTitle}>Urban Safety Explorer</Text>
+            <Text style={styles.headerTag}>[UTILITY // SECTOR_SURVEILLANCE]</Text>
+            <Text style={styles.headerTitle}>URBAN SAFETY EXPLORER</Text>
             <Text style={styles.headerSubtitle}>
-              Interactive MapTiler Risk Zones & Infrastructure
+              Interactive MapTiler Risk Zones, Diurnal Variance & Surveillance Telemetry
             </Text>
           </View>
         </View>
 
-        {/* City Toggle */}
+        {/* City Toggle: Sharp Block Buttons */}
         <View style={styles.cityPillGroup}>
           <TouchableOpacity
             style={[styles.cityPill, currentCity === 'Mumbai' && styles.cityPillActive]}
@@ -76,9 +79,10 @@ export const ZoneExplorerScreen: React.FC<ZoneExplorerScreenProps> = ({
               selectCity('Mumbai');
               setInspectedZone(null);
             }}
+            activeOpacity={0.8}
           >
             <Text style={[styles.cityPillText, currentCity === 'Mumbai' && styles.cityPillTextActive]}>
-              🏙️ Mumbai
+              🏙️ MUMBAI
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -87,22 +91,29 @@ export const ZoneExplorerScreen: React.FC<ZoneExplorerScreenProps> = ({
               selectCity('Delhi');
               setInspectedZone(null);
             }}
+            activeOpacity={0.8}
           >
             <Text style={[styles.cityPillText, currentCity === 'Delhi' && styles.cityPillTextActive]}>
-              🏛️ Delhi
+              🏛️ DELHI
             </Text>
           </TouchableOpacity>
         </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Search Bar & Filter Controls */}
-        <View style={styles.controlPanel}>
+        {/* Floating Utility Panel: Raw, Hard-Bordered Controls */}
+        <View style={[styles.controlPanel, HUD_SHADOWS.hard]}>
+          <View style={styles.panelHeaderRow}>
+            <Text style={styles.panelHeaderTag}>[SECTOR SEARCH & LAYER FILTERS]</Text>
+            <Text style={styles.panelResultsCount}>{searchResults.length} SECTORS MATCHED</Text>
+          </View>
+
+          {/* Search Bar */}
           <View style={styles.searchRow}>
             <TextInput
               style={styles.searchInput}
               placeholder={`Search in ${currentCity} (e.g. Bandra, BKC, Connaught Place)...`}
-              placeholderTextColor="#94A3B8"
+              placeholderTextColor="#737373"
               value={searchQuery}
               onChangeText={setSearchQuery}
             />
@@ -113,7 +124,7 @@ export const ZoneExplorerScreen: React.FC<ZoneExplorerScreenProps> = ({
             )}
           </View>
 
-          {/* Time & Risk Filter Pills */}
+          {/* Time & Risk Filter Pills: Block Buttons with 2px Borders */}
           <View style={styles.filterRow}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               {/* Time Filters */}
@@ -122,9 +133,10 @@ export const ZoneExplorerScreen: React.FC<ZoneExplorerScreenProps> = ({
                   key={time}
                   style={[styles.filterChip, timeOfDayFilter === time && styles.filterChipTimeActive]}
                   onPress={() => setTimeOfDayFilter(time)}
+                  activeOpacity={0.8}
                 >
                   <Text style={[styles.filterChipText, timeOfDayFilter === time && styles.filterChipTextActive]}>
-                    {time === 'Night' ? '🌙 Night' : time === 'Evening' ? '🌇 Eve' : time}
+                    {time === 'Night' ? '🌙 NIGHT' : time === 'Evening' ? '🌇 EVENING' : time.toUpperCase()}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -142,12 +154,15 @@ export const ZoneExplorerScreen: React.FC<ZoneExplorerScreenProps> = ({
                         ? styles.filterChipLowActive
                         : risk === 'High Risk'
                         ? styles.filterChipHighActive
-                        : styles.filterChipModActive)
+                        : risk === 'Moderate Risk'
+                        ? styles.filterChipModActive
+                        : styles.filterChipAllActive)
                   ]}
                   onPress={() => setRiskFilter(risk)}
+                  activeOpacity={0.8}
                 >
                   <Text style={[styles.filterChipText, riskFilter === risk && styles.filterChipTextActive]}>
-                    {risk === 'All' ? 'All Risks' : risk}
+                    {risk === 'All' ? 'ALL RISKS' : risk.toUpperCase()}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -155,8 +170,12 @@ export const ZoneExplorerScreen: React.FC<ZoneExplorerScreenProps> = ({
           </View>
         </View>
 
-        {/* Interactive MapTiler Map */}
-        <View style={styles.mapContainer}>
+        {/* Interactive Map: Framed in Sharp 3px Black Border with Hard Shadow */}
+        <View style={[styles.mapContainer, HUD_SHADOWS.hardLg]}>
+          <View style={styles.mapHeaderHud}>
+            <Text style={styles.mapHudTag}>[LIVE MAPTILER RISK CLUSTERS // {currentCity.toUpperCase()}]</Text>
+            <Text style={styles.mapHudStatus}>ACTIVE</Text>
+          </View>
           <SafeZoneMap
             userLocation={userLocation}
             zones={searchResults}
@@ -165,73 +184,77 @@ export const ZoneExplorerScreen: React.FC<ZoneExplorerScreenProps> = ({
           />
         </View>
 
-        {/* Floating / Active Inspected Area Risk Card */}
+        {/* Floating Active Inspected Area Risk Card */}
         <CurrentAreaRiskCard
           zone={displayZone}
           distanceKm={inspectedZone ? 0 : distanceToNearestKm}
+          onViewCrimeDossier={() => displayZone && setDossierZone(displayZone)}
         />
 
-        {/* Quick Route Action CTA */}
+        {/* Quick Route Action CTA: High-Contrast Tactical Card */}
         {displayZone && onNavigateToNavigator && (
-          <View style={styles.routeCtaCard}>
-            <View>
-              <Text style={styles.routeCtaTitle}>Navigate with Risk Shield</Text>
+          <View style={[styles.routeCtaCard, HUD_SHADOWS.hard]}>
+            <View style={{ flex: 1, paddingRight: 12 }}>
+              <Text style={styles.routeCtaTag}>[EXPEDITION DIRECTIVE]</Text>
+              <Text style={styles.routeCtaTitle}>NAVIGATE WITH AI SHIELD ↗</Text>
               <Text style={styles.routeCtaSub}>
-                Plan safety-optimized travel to or from {displayZone.Location}
+                Compute safety-optimized route corridors to or from {displayZone.Location.toUpperCase()}
               </Text>
             </View>
             <TouchableOpacity
-              style={styles.routeCtaButton}
+              style={[styles.routeCtaButton, HUD_SHADOWS.hardSm]}
               onPress={() => onNavigateToNavigator(displayZone.Location)}
               activeOpacity={0.8}
             >
-              <Text style={styles.routeCtaButtonText}>Find Safe Route →</Text>
+              <Text style={styles.routeCtaButtonText}>PLAN ROUTE ↗</Text>
             </TouchableOpacity>
           </View>
         )}
 
-        {/* Quick Location Grid */}
+        {/* Quick Location Grid: Neo-Brutalist Metric Tiles */}
         <View style={styles.quickLocationsSection}>
-          <Text style={styles.sectionHeading}>
-            {currentCity} Safety Sectors ({searchResults.length} Analyzed)
-          </Text>
+          <View style={styles.sectionHeadingRow}>
+            <Text style={styles.sectionHeadingTag}>[SECTOR DATABASE // TELEMETRY]</Text>
+            <Text style={styles.sectionHeading}>
+              {currentCity.toUpperCase()} SAFETY SECTORS ({searchResults.length} MONITORED)
+            </Text>
+          </View>
 
           <View style={styles.locationsGrid}>
             {searchResults.map((zone, idx) => {
               const isSelected = displayZone?.Location === zone.Location;
-              const color =
-                zone.risk_category === 'Low Risk'
-                  ? '#10B981'
-                  : zone.risk_category === 'Moderate Risk'
-                  ? '#F59E0B'
-                  : '#EF4444';
+              const isLow = zone.risk_category === 'Low Risk';
+              const isMod = zone.risk_category === 'Moderate Risk';
+              const badgeBg = isLow ? HUD_COLORS.riskLow : isMod ? HUD_COLORS.riskMod : HUD_COLORS.riskHigh;
+              const badgeTextColor = isMod ? '#000000' : '#FFFFFF';
 
               return (
                 <TouchableOpacity
                   key={`${zone.City}-${zone.Location}-${idx}`}
                   style={[
                     styles.locationCard,
-                    isSelected && styles.locationCardSelected
+                    isSelected && styles.locationCardSelected,
+                    HUD_SHADOWS.hardSm
                   ]}
                   onPress={() => handleZoneSelect(zone)}
                   activeOpacity={0.8}
                 >
                   <View style={styles.locationCardHeader}>
-                    <Text style={styles.locationCardName}>{zone.Location}</Text>
-                    <View style={[styles.miniBadge, { backgroundColor: `${color}20`, borderColor: color }]}>
-                      <Text style={[styles.miniBadgeText, { color }]}>
+                    <Text style={styles.locationCardName}>{zone.Location.toUpperCase()}</Text>
+                    <View style={[styles.miniBadge, { backgroundColor: badgeBg }]}>
+                      <Text style={[styles.miniBadgeText, { color: badgeTextColor }]}>
                         {zone.avg_risk_score.toFixed(2)}
                       </Text>
                     </View>
                   </View>
 
                   <Text style={styles.locationCardMeta}>
-                    {zone.risk_category} • {zone.Time_of_Day}
+                    {zone.risk_category.toUpperCase()} • {zone.Time_of_Day.toUpperCase()}
                   </Text>
 
                   <View style={styles.locationStatsRow}>
                     <Text style={styles.locationStatText}>🎥 {zone.avg_cctv.toFixed(1)} CCTV</Text>
-                    <Text style={styles.locationStatText}>🚓 {zone.avg_police_stations.toFixed(1)} Police</Text>
+                    <Text style={styles.locationStatText}>🚓 {zone.avg_police_stations.toFixed(1)} POLICE</Text>
                   </View>
                 </TouchableOpacity>
               );
@@ -239,6 +262,17 @@ export const ZoneExplorerScreen: React.FC<ZoneExplorerScreenProps> = ({
           </View>
         </View>
       </ScrollView>
+
+      {/* Location Crime Detail Dossier Modal */}
+      {dossierZone && (
+        <LocationCrimeModal
+          visible={!!dossierZone}
+          zone={dossierZone}
+          rank={1}
+          timeOfDay={timeOfDayFilter}
+          onClose={() => setDossierZone(null)}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -246,14 +280,14 @@ export const ZoneExplorerScreen: React.FC<ZoneExplorerScreenProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#090D16'
+    backgroundColor: HUD_COLORS.canvas
   },
   header: {
     paddingHorizontal: 20,
     paddingVertical: 14,
-    backgroundColor: '#0B111E',
-    borderBottomWidth: 1,
-    borderBottomColor: '#1E293B',
+    backgroundColor: HUD_COLORS.canvas,
+    borderBottomWidth: 2,
+    borderBottomColor: HUD_COLORS.borderBlack,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center'
@@ -264,48 +298,58 @@ const styles = StyleSheet.create({
     gap: 12
   },
   brandBadge: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: '#1E293B',
+    width: 44,
+    height: 44,
+    borderRadius: 0,
+    backgroundColor: HUD_COLORS.clay,
     borderWidth: 2,
-    borderColor: '#38BDF8',
+    borderColor: HUD_COLORS.borderBlack,
     justifyContent: 'center',
     alignItems: 'center'
   },
   brandBadgeIcon: {
     fontSize: 22
   },
-  headerTitle: {
-    fontSize: 20,
+  headerTag: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
     fontWeight: '900',
-    color: '#FFFFFF'
+    color: HUD_COLORS.clay,
+    letterSpacing: 1
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack,
+    letterSpacing: -0.5
   },
   headerSubtitle: {
     fontSize: 11,
-    color: '#94A3B8',
-    marginTop: 2
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
+    color: HUD_COLORS.textMuted,
+    marginTop: 1
   },
   cityPillGroup: {
     flexDirection: 'row',
-    backgroundColor: '#1E293B',
-    borderRadius: 20,
-    padding: 3,
-    borderWidth: 1,
-    borderColor: '#334155'
+    backgroundColor: '#EAE8E2',
+    borderRadius: 0,
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack
   },
   cityPill: {
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 16
+    borderRadius: 0
   },
   cityPillActive: {
-    backgroundColor: '#2563EB'
+    backgroundColor: HUD_COLORS.borderBlack
   },
   cityPillText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#94A3B8'
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 11,
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack
   },
   cityPillTextActive: {
     color: '#FFFFFF'
@@ -313,42 +357,65 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 16,
     paddingBottom: 50,
-    maxWidth: 1000,
+    maxWidth: 1040,
     alignSelf: 'center',
     width: '100%'
   },
   controlPanel: {
-    backgroundColor: '#131B2E',
-    borderRadius: 20,
+    backgroundColor: HUD_COLORS.surfaceCard,
+    borderRadius: 0,
     padding: 14,
-    borderWidth: 1,
-    borderColor: '#1E293B',
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack,
     marginBottom: 16
+  },
+  panelHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E5',
+    paddingBottom: 6,
+    marginBottom: 10
+  },
+  panelHeaderTag: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    fontWeight: '900',
+    color: HUD_COLORS.clay,
+    letterSpacing: 1
+  },
+  panelResultsCount: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    fontWeight: '700',
+    color: HUD_COLORS.textMuted
   },
   searchRow: {
     flexDirection: 'row',
     alignItems: 'center',
     position: 'relative',
-    marginBottom: 10
+    marginBottom: 12
   },
   searchInput: {
     flex: 1,
-    backgroundColor: '#090D16',
-    borderWidth: 1,
-    borderColor: '#334155',
-    borderRadius: 14,
+    backgroundColor: '#FAF9F6',
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack,
+    borderRadius: 0,
     paddingHorizontal: 14,
     paddingVertical: 10,
-    fontSize: 13,
-    color: '#FFFFFF'
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 12,
+    color: HUD_COLORS.textBlack
   },
   clearSearchBtn: {
     position: 'absolute',
-    right: 12,
+    right: 10,
     padding: 4
   },
   clearSearchText: {
-    color: '#94A3B8',
+    color: HUD_COLORS.textBlack,
     fontSize: 14,
     fontWeight: 'bold'
   },
@@ -357,93 +424,139 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   filterChip: {
-    backgroundColor: '#1E293B',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 14,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 0,
     marginRight: 6,
-    borderWidth: 1,
-    borderColor: '#334155'
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack
   },
   filterChipTimeActive: {
-    backgroundColor: '#7C3AED',
-    borderColor: '#A78BFA'
+    backgroundColor: HUD_COLORS.clay
+  },
+  filterChipAllActive: {
+    backgroundColor: HUD_COLORS.borderBlack
   },
   filterChipLowActive: {
-    backgroundColor: '#065F46',
-    borderColor: '#10B981'
+    backgroundColor: HUD_COLORS.riskLow
   },
   filterChipModActive: {
-    backgroundColor: '#92400E',
-    borderColor: '#F59E0B'
+    backgroundColor: HUD_COLORS.riskMod
   },
   filterChipHighActive: {
-    backgroundColor: '#991B1B',
-    borderColor: '#EF4444'
+    backgroundColor: HUD_COLORS.riskHigh
   },
   filterChipText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#CBD5E1'
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 10,
+    fontWeight: '800',
+    color: HUD_COLORS.textBlack
   },
   filterChipTextActive: {
-    color: '#FFFFFF',
-    fontWeight: '700'
+    color: '#FFFFFF'
   },
   chipDivider: {
-    width: 1,
+    width: 2,
     height: 18,
-    backgroundColor: '#334155',
+    backgroundColor: HUD_COLORS.borderBlack,
     marginHorizontal: 8
   },
   mapContainer: {
-    borderRadius: 20,
+    borderRadius: 0,
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: '#1E293B',
+    borderWidth: 3,
+    borderColor: HUD_COLORS.borderBlack,
     marginBottom: 16
   },
+  mapHeaderHud: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: HUD_COLORS.surfaceDark,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderBottomWidth: 2,
+    borderBottomColor: HUD_COLORS.borderBlack
+  },
+  mapHudTag: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 10,
+    fontWeight: '900',
+    color: '#F9F8F6',
+    letterSpacing: 1
+  },
+  mapHudStatus: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    fontWeight: '900',
+    color: HUD_COLORS.riskLow
+  },
   routeCtaCard: {
-    backgroundColor: '#1E293B',
-    borderRadius: 18,
+    backgroundColor: HUD_COLORS.clay,
+    borderRadius: 0,
     padding: 16,
     marginVertical: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#334155'
+    borderWidth: 3,
+    borderColor: HUD_COLORS.borderBlack
+  },
+  routeCtaTag: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    fontWeight: '900',
+    color: '#FFE2D7',
+    letterSpacing: 1,
+    marginBottom: 2
   },
   routeCtaTitle: {
-    fontSize: 15,
-    fontWeight: '800',
-    color: '#FFFFFF'
+    fontSize: 16,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    letterSpacing: -0.5
   },
   routeCtaSub: {
     fontSize: 11,
-    color: '#94A3B8',
-    marginTop: 2,
-    maxWidth: 260
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
+    color: '#FFE2D7',
+    marginTop: 2
   },
   routeCtaButton: {
-    backgroundColor: '#10B981',
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 12
+    backgroundColor: '#000000',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 0,
+    borderWidth: 2,
+    borderColor: '#FFFFFF'
   },
   routeCtaButtonText: {
     color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '800'
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 0.5
   },
   quickLocationsSection: {
-    marginTop: 8
+    marginTop: 12
+  },
+  sectionHeadingRow: {
+    marginBottom: 12
+  },
+  sectionHeadingTag: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    fontWeight: '900',
+    color: HUD_COLORS.clay,
+    letterSpacing: 1
   },
   sectionHeading: {
-    fontSize: 15,
-    fontWeight: '800',
-    color: '#FFFFFF',
-    marginBottom: 12
+    fontSize: 16,
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack,
+    letterSpacing: -0.5
   },
   locationsGrid: {
     flexDirection: 'row',
@@ -452,42 +565,47 @@ const styles = StyleSheet.create({
   },
   locationCard: {
     width: '48.5%',
-    backgroundColor: '#131B2E',
-    borderRadius: 16,
+    backgroundColor: HUD_COLORS.surfaceCard,
+    borderRadius: 0,
     padding: 12,
-    borderWidth: 1,
-    borderColor: '#1E293B'
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack
   },
   locationCardSelected: {
-    borderColor: '#38BDF8',
-    backgroundColor: '#0F2338'
+    borderColor: HUD_COLORS.clay,
+    backgroundColor: '#FFF7ED',
+    borderWidth: 3
   },
   locationCardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4
+    marginBottom: 6
   },
   locationCardName: {
     fontSize: 13,
-    fontWeight: '800',
-    color: '#FFFFFF',
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack,
     flex: 1,
-    paddingRight: 4
+    paddingRight: 6
   },
   miniBadge: {
     paddingHorizontal: 6,
     paddingVertical: 2,
-    borderRadius: 8,
-    borderWidth: 1
+    borderRadius: 0,
+    borderWidth: 1,
+    borderColor: HUD_COLORS.borderBlack
   },
   miniBadgeText: {
+    fontFamily: HUD_FONTS.mono,
     fontSize: 10,
-    fontWeight: '800'
+    fontWeight: '900'
   },
   locationCardMeta: {
-    fontSize: 10,
-    color: '#94A3B8',
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    color: HUD_COLORS.textMuted,
+    fontWeight: '700',
     marginBottom: 8
   },
   locationStatsRow: {
@@ -495,9 +613,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   locationStatText: {
-    fontSize: 10,
-    color: '#CBD5E1',
-    fontWeight: '500'
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    color: HUD_COLORS.textBlack,
+    fontWeight: '700'
   }
 });
 

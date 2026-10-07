@@ -13,6 +13,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useSafety } from '../context/SafetyContext';
 import { useEmergency } from '../context/EmergencyContext';
+import { HUD_COLORS, HUD_FONTS, HUD_SHADOWS } from '../theme/hudTheme';
 
 export const SettingsScreen: React.FC = () => {
   const { user, updateProfile } = useAuth();
@@ -26,7 +27,6 @@ export const SettingsScreen: React.FC = () => {
   const [callerName, setCallerName] = useState(fakeCallSettings.callerName);
   const [callerNumber, setCallerNumber] = useState(fakeCallSettings.callerNumber);
   const [savedSuccess, setSavedSuccess] = useState(false);
-  const mapTilerConfigured = Boolean(process.env.EXPO_PUBLIC_MAPTILER_API_KEY);
 
   const handleSave = async () => {
     await updateProfile(name, phone, emergencyContact);
@@ -40,16 +40,17 @@ export const SettingsScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
+      {/* Header: Neo-Brutalist Tactical HUD */}
       <View style={styles.header}>
         <View style={styles.brandRow}>
-          <View style={styles.brandBadge}>
+          <View style={[styles.brandBadge, HUD_SHADOWS.hardSm]}>
             <Text style={styles.brandBadgeIcon}>⚙️</Text>
           </View>
           <View>
-            <Text style={styles.headerTitle}>System Preferences</Text>
+            <Text style={styles.headerTag}>[CONFIGURATION // SYSTEM_PREFS]</Text>
+            <Text style={styles.headerTitle}>SYSTEM PREFERENCES</Text>
             <Text style={styles.headerSubtitle}>
-              MapTiler Engine, Default Metros & Profile
+              Default Metros & Emergency Contact Parameters
             </Text>
           </View>
         </View>
@@ -57,93 +58,128 @@ export const SettingsScreen: React.FC = () => {
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {savedSuccess && (
-          <View style={styles.successBanner}>
-            <Text style={styles.successText}>✓ Preferences successfully saved!</Text>
+          <View style={[styles.successBanner, HUD_SHADOWS.hard]}>
+            <Text style={styles.successText}>[OK] PREFERENCES SUCCESSFULLY COMMITTED</Text>
           </View>
         )}
 
-        {/* Map Engine & MapTiler API Status Card */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>🗺️ MapTiler Engine Configuration</Text>
-          <View style={styles.statusRow}>
-            <View style={[styles.statusDot, !mapTilerConfigured && styles.statusDotInactive]} />
-            <Text style={styles.statusLabel}>
-              MapTiler Cloud SDK: {mapTilerConfigured ? 'API key configured' : 'API key missing'}
+        {/* Default City Preference */}
+        <View style={[styles.card, HUD_SHADOWS.hard]}>
+          <View style={styles.cardHeaderRow}>
+            <Text style={styles.cardTag}>[METRO SELECTION]</Text>
+            <Text style={styles.cardTitle}>DEFAULT METROPOLITAN HUB</Text>
+            <Text style={styles.cardSubtitle}>
+              Active Metro Hub: <Text style={styles.activeHubText}>{cityFilter.toUpperCase()}</Text>
             </Text>
           </View>
-          <Text style={styles.statusExplanation}>
-            Set EXPO_PUBLIC_MAPTILER_API_KEY in geosafe-mobile/.env to load map tiles. Do not commit the key.
-          </Text>
-        </View>
-
-        {/* Default City Preference */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>🏙️ Default Metropolitan Hub</Text>
-          <Text style={styles.cardSubtitle}>
-            Active City: <Text style={{ color: '#10B981', fontWeight: 'bold' }}>{cityFilter}</Text>
-          </Text>
 
           <View style={styles.cityButtonGroup}>
             <TouchableOpacity
-              style={[styles.cityBtn, cityFilter === 'Mumbai' && styles.cityBtnActive]}
+              style={[
+                styles.cityBtn,
+                cityFilter === 'Mumbai' && styles.cityBtnActive,
+                HUD_SHADOWS.hardSm
+              ]}
               onPress={() => selectCity('Mumbai')}
+              activeOpacity={0.8}
             >
               <Text style={styles.cityBtnIcon}>🏙️</Text>
-              <Text style={styles.cityBtnText}>Mumbai Hub</Text>
-              <Text style={styles.cityBtnSub}>Andheri, Bandra, BKC, Colaba</Text>
+              <Text style={[styles.cityBtnText, cityFilter === 'Mumbai' && styles.cityBtnTextActive]}>
+                MUMBAI HUB
+              </Text>
+              <Text style={[styles.cityBtnSub, cityFilter === 'Mumbai' && styles.cityBtnSubActive]}>
+                Andheri, Bandra, BKC, Colaba, Marine Drive
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.cityBtn, cityFilter === 'Delhi' && styles.cityBtnActive]}
+              style={[
+                styles.cityBtn,
+                cityFilter === 'Delhi' && styles.cityBtnActive,
+                HUD_SHADOWS.hardSm
+              ]}
               onPress={() => selectCity('Delhi')}
+              activeOpacity={0.8}
             >
               <Text style={styles.cityBtnIcon}>🏛️</Text>
-              <Text style={styles.cityBtnText}>Delhi NCR Hub</Text>
-              <Text style={styles.cityBtnSub}>CP, Lajpat, Saket, Rohini</Text>
+              <Text style={[styles.cityBtnText, cityFilter === 'Delhi' && styles.cityBtnTextActive]}>
+                DELHI NCR HUB
+              </Text>
+              <Text style={[styles.cityBtnSub, cityFilter === 'Delhi' && styles.cityBtnSubActive]}>
+                CP, Lajpat, Saket, Rohini, Dwarka
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
 
         {/* User Profile */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>👤 User Profile</Text>
+        <View style={[styles.card, HUD_SHADOWS.hard]}>
+          <View style={styles.cardHeaderRow}>
+            <Text style={styles.cardTag}>[OPERATOR TELEMETRY]</Text>
+            <Text style={styles.cardTitle}>USER PROFILE & DISPATCH TARGET</Text>
+          </View>
 
           <View style={styles.formGroup}>
-            <Text style={styles.label}>Full Name</Text>
+            <Text style={styles.label}>OPERATOR FULL NAME</Text>
             <TextInput
               style={styles.input}
               value={name}
               onChangeText={setName}
               placeholder="e.g. Ananya Sharma"
-              placeholderTextColor="#94A3B8"
+              placeholderTextColor="#737373"
             />
           </View>
 
           <View style={styles.formGroup}>
-            <Text style={styles.label}>Phone Number</Text>
+            <Text style={styles.label}>OPERATOR CELLULAR PHONE</Text>
             <TextInput
               style={styles.input}
               value={phone}
               onChangeText={setPhone}
               placeholder="+91 98765 43210"
-              placeholderTextColor="#94A3B8"
+              placeholderTextColor="#737373"
               keyboardType="phone-pad"
+            />
+          </View>
+
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>PRIMARY EMERGENCY CONTACT (1-TAP SOS DISPATCH)</Text>
+            <TextInput
+              style={[styles.input, styles.highlightInput]}
+              value={emergencyContact}
+              onChangeText={setEmergencyContact}
+              placeholder="+91 91234 56789"
+              placeholderTextColor="#737373"
+              keyboardType="phone-pad"
+            />
+          </View>
+
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>CUSTOM FAKE CALLER NAME</Text>
+            <TextInput
+              style={styles.input}
+              value={callerName}
+              onChangeText={setCallerName}
+              placeholder="e.g. Mom"
+              placeholderTextColor="#737373"
             />
           </View>
         </View>
 
-        {/* Save Button */}
-        <TouchableOpacity style={styles.saveButton} onPress={handleSave} activeOpacity={0.8}>
-          <Text style={styles.saveButtonText}>Save Preferences</Text>
+        {/* Save Button: Heavy Hard Shadow Block Trigger */}
+        <TouchableOpacity
+          style={[styles.saveButton, HUD_SHADOWS.hardLg]}
+          onPress={handleSave}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.saveButtonText}>COMMIT PREFERENCES ↗</Text>
         </TouchableOpacity>
 
-        {/* Academic Project Credits */}
-        <View style={styles.academicFooter}>
-          <Text style={styles.academicTitle}>GeoSafe: Academic Final Year Project</Text>
+        {/* Academic Project Credits: Dark Tactical Surface */}
+        <View style={[styles.academicFooter, HUD_SHADOWS.hard]}>
+          <Text style={styles.academicTitle}>GEOSAFE: RISK-AWARE TRANSIT INTELLIGENCE</Text>
           <Text style={styles.academicDetails}>
-            Urban Safety Analytics & Real-Time Directions by Risk Meter{'\n'}
-            Tech Stack: React Native, TypeScript, MapTiler Cloud SDK, Firebase{'\n'}
-            Algorithms: Haversine Proximity, Diurnal Multiplier, Multi-Criteria Route Optimization
+            Urban Safety Analytics & Multi-Criteria Directions by Composite Risk Index{'\n'}
           </Text>
         </View>
       </ScrollView>
@@ -154,14 +190,14 @@ export const SettingsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#090D16'
+    backgroundColor: HUD_COLORS.canvas
   },
   header: {
     paddingHorizontal: 20,
     paddingVertical: 14,
-    backgroundColor: '#0B111E',
-    borderBottomWidth: 1,
-    borderBottomColor: '#1E293B'
+    backgroundColor: HUD_COLORS.canvas,
+    borderBottomWidth: 2,
+    borderBottomColor: HUD_COLORS.borderBlack
   },
   brandRow: {
     flexDirection: 'row',
@@ -169,64 +205,99 @@ const styles = StyleSheet.create({
     gap: 12
   },
   brandBadge: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: '#1E293B',
+    width: 44,
+    height: 44,
+    borderRadius: 0,
+    backgroundColor: HUD_COLORS.clay,
     borderWidth: 2,
-    borderColor: '#94A3B8',
+    borderColor: HUD_COLORS.borderBlack,
     justifyContent: 'center',
     alignItems: 'center'
   },
   brandBadgeIcon: {
     fontSize: 22
   },
-  headerTitle: {
-    fontSize: 20,
+  headerTag: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
     fontWeight: '900',
-    color: '#FFFFFF'
+    color: HUD_COLORS.clay,
+    letterSpacing: 1
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack,
+    letterSpacing: -0.5
   },
   headerSubtitle: {
     fontSize: 11,
-    color: '#94A3B8',
-    marginTop: 2
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
+    color: HUD_COLORS.textMuted,
+    marginTop: 1
   },
   scrollContent: {
     padding: 16,
     paddingBottom: 50,
-    maxWidth: 800,
+    maxWidth: 880,
     alignSelf: 'center',
     width: '100%',
     gap: 16
   },
   successBanner: {
-    backgroundColor: '#065F46',
-    padding: 12,
-    borderRadius: 12,
+    backgroundColor: HUD_COLORS.riskLow,
+    padding: 14,
+    borderRadius: 0,
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack,
     alignItems: 'center'
   },
   successText: {
-    color: '#A7F3D0',
-    fontWeight: '700',
-    fontSize: 13
+    color: '#000000',
+    fontFamily: HUD_FONTS.mono,
+    fontWeight: '900',
+    fontSize: 12,
+    letterSpacing: 0.5
   },
   card: {
-    backgroundColor: '#131B2E',
-    borderRadius: 20,
+    backgroundColor: HUD_COLORS.surfaceCard,
+    borderRadius: 0,
     padding: 18,
-    borderWidth: 1,
-    borderColor: '#1E293B'
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack
+  },
+  cardHeaderRow: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E5',
+    paddingBottom: 8,
+    marginBottom: 12
+  },
+  cardTag: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    fontWeight: '900',
+    color: HUD_COLORS.clay,
+    letterSpacing: 1
   },
   cardTitle: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: '#FFFFFF',
-    marginBottom: 4
+    fontSize: 18,
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack,
+    letterSpacing: -0.5,
+    marginTop: 2
   },
   cardSubtitle: {
-    fontSize: 12,
-    color: '#94A3B8',
-    marginBottom: 14
+    fontSize: 11,
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
+    color: HUD_COLORS.textMuted,
+    marginTop: 4
+  },
+  activeHubText: {
+    fontFamily: HUD_FONTS.mono,
+    fontWeight: '900',
+    color: HUD_COLORS.clay
   },
   statusRow: {
     flexDirection: 'row',
@@ -237,20 +308,25 @@ const styles = StyleSheet.create({
   statusDot: {
     width: 10,
     height: 10,
-    borderRadius: 5,
-    backgroundColor: '#10B981'
+    borderRadius: 0,
+    backgroundColor: HUD_COLORS.riskLow,
+    borderWidth: 1,
+    borderColor: HUD_COLORS.borderBlack
   },
   statusDotInactive: {
-    backgroundColor: '#F59E0B'
+    backgroundColor: HUD_COLORS.riskMod
   },
   statusLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#FFFFFF'
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 11,
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack
   },
   statusExplanation: {
     fontSize: 11,
-    color: '#94A3B8',
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
+    color: HUD_COLORS.textMuted,
     lineHeight: 16,
     marginTop: 4
   },
@@ -260,81 +336,112 @@ const styles = StyleSheet.create({
   },
   cityBtn: {
     flex: 1,
-    backgroundColor: '#090D16',
-    borderRadius: 16,
+    backgroundColor: '#FAF9F6',
+    borderRadius: 0,
     padding: 14,
-    borderWidth: 1,
-    borderColor: '#334155',
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack,
     alignItems: 'center'
   },
   cityBtnActive: {
-    borderColor: '#10B981',
-    backgroundColor: '#07241A'
+    backgroundColor: '#000000'
   },
   cityBtnIcon: {
     fontSize: 28,
     marginBottom: 6
   },
   cityBtnText: {
-    fontSize: 14,
-    fontWeight: '800',
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 13,
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack,
+    letterSpacing: 0.5
+  },
+  cityBtnTextActive: {
     color: '#FFFFFF'
   },
   cityBtnSub: {
     fontSize: 10,
-    color: '#94A3B8',
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
+    color: HUD_COLORS.textMuted,
     marginTop: 4,
     textAlign: 'center'
   },
+  cityBtnSubActive: {
+    color: '#D4D4D4'
+  },
   formGroup: {
-    marginBottom: 12
+    marginBottom: 14
   },
   label: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#CBD5E1',
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 10,
+    fontWeight: '900',
+    color: HUD_COLORS.textBlack,
+    letterSpacing: 0.5,
     marginBottom: 6
   },
   input: {
-    backgroundColor: '#090D16',
-    borderWidth: 1,
-    borderColor: '#334155',
-    borderRadius: 12,
-    paddingHorizontal: 14,
+    backgroundColor: '#FAF9F6',
+    borderWidth: 2,
+    borderColor: HUD_COLORS.borderBlack,
+    borderRadius: 0,
+    paddingHorizontal: 12,
     paddingVertical: 10,
-    color: '#FFFFFF',
+    fontFamily: HUD_FONTS.mono,
+    color: HUD_COLORS.textBlack,
     fontSize: 13
   },
+  highlightInput: {
+    borderLeftWidth: 4,
+    borderLeftColor: HUD_COLORS.clay
+  },
   saveButton: {
-    backgroundColor: '#2563EB',
-    paddingVertical: 14,
-    borderRadius: 14,
-    alignItems: 'center'
+    backgroundColor: HUD_COLORS.clay,
+    paddingVertical: 16,
+    borderRadius: 0,
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: HUD_COLORS.borderBlack
   },
   saveButtonText: {
     color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '700'
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 14,
+    fontWeight: '900',
+    letterSpacing: 1
   },
   academicFooter: {
-    backgroundColor: '#090D16',
-    borderRadius: 14,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#1E293B',
+    backgroundColor: HUD_COLORS.surfaceDark,
+    borderRadius: 0,
+    padding: 18,
+    borderWidth: 3,
+    borderColor: HUD_COLORS.borderBlack,
     alignItems: 'center'
   },
-  academicTitle: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: '#38BDF8',
+  academicTag: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    fontWeight: '900',
+    color: HUD_COLORS.clay,
+    letterSpacing: 1,
     marginBottom: 4
+  },
+  academicTitle: {
+    fontSize: 14,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    marginBottom: 6,
+    letterSpacing: -0.5
   },
   academicDetails: {
     fontSize: 11,
-    color: '#64748B',
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
+    color: '#A3A3A3',
     textAlign: 'center',
-    lineHeight: 16
+    lineHeight: 18
   }
 });
 

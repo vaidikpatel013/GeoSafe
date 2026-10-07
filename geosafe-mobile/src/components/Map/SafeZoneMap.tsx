@@ -14,6 +14,8 @@ interface SafeZoneMapProps {
   originPoint?: { name: string; lat: number; lng: number };
   destinationPoint?: { name: string; lat: number; lng: number };
   mapStyle?: 'streets' | 'dark' | 'outdoor';
+  onToggleFullscreen?: () => void;
+  isFullscreen?: boolean;
 }
 
 let MapImpl: React.ComponentType<SafeZoneMapProps>;

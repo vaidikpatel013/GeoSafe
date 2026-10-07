@@ -8,6 +8,7 @@ import {
   SafeAreaView
 } from 'react-native';
 import { useEmergency } from '../context/EmergencyContext';
+import { HUD_COLORS, HUD_FONTS, HUD_SHADOWS } from '../theme/hudTheme';
 
 export const FakeCallScreen: React.FC = () => {
   const {
@@ -28,16 +29,17 @@ export const FakeCallScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
+      {/* Header: High-Contrast Inverted Dark Tactical HUD */}
       <View style={styles.header}>
         <View style={styles.brandRow}>
-          <View style={styles.brandBadge}>
+          <View style={[styles.brandBadge, HUD_SHADOWS.hardSm]}>
             <Text style={styles.brandBadgeIcon}>📞</Text>
           </View>
           <View>
-            <Text style={styles.headerTitle}>Fake Call Simulator</Text>
+            <Text style={styles.headerTag}>[UTILITY // DE-ESCALATION DISPATCH]</Text>
+            <Text style={styles.headerTitle}>FAKE CALL SIMULATOR</Text>
             <Text style={styles.headerSubtitle}>
-              Discreet Non-Confrontational Escape Utility
+              Discreet Cellular Ring Synthesis & Stealth Escape Pretext
             </Text>
           </View>
         </View>
@@ -46,78 +48,88 @@ export const FakeCallScreen: React.FC = () => {
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Active Timer Banner */}
         {fakeCallTimerRemaining !== null && (
-          <View style={styles.timerBanner}>
+          <View style={[styles.timerBanner, HUD_SHADOWS.hard]}>
             <View style={styles.timerPulse} />
             <View style={{ flex: 1 }}>
               <Text style={styles.timerBannerTitle}>
-                Call Scheduled in {fakeCallTimerRemaining} Seconds
+                DISPATCH SCHEDULED IN 0{fakeCallTimerRemaining} SECONDS
               </Text>
               <Text style={styles.timerBannerSub}>
-                Caller: {fakeCallSettings.callerName} ({fakeCallSettings.callerNumber})
+                CALLER: {fakeCallSettings.callerName.toUpperCase()} ({fakeCallSettings.callerNumber})
               </Text>
             </View>
-            <TouchableOpacity style={styles.cancelBannerBtn} onPress={cancelFakeCallTimer}>
-              <Text style={styles.cancelBannerText}>Cancel</Text>
+            <TouchableOpacity
+              style={[styles.cancelBannerBtn, HUD_SHADOWS.hardSm]}
+              onPress={cancelFakeCallTimer}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.cancelBannerText}>ABORT [CANCEL] ✕</Text>
             </TouchableOpacity>
           </View>
         )}
 
-        {/* Quick Launch Card */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>⏱️ Quick Delay Triggers</Text>
-          <Text style={styles.cardSubtitle}>
-            Simulate a realistic incoming cellular ring to gracefully exit uncomfortable situations
-          </Text>
+        {/* Quick Launch Card: Stark Dark Surface */}
+        <View style={[styles.card, HUD_SHADOWS.hard]}>
+          <View style={styles.cardHeaderRow}>
+            <Text style={styles.cardTag}>[TRIGGER PROTOCOLS]</Text>
+            <Text style={styles.cardTitle}>QUICK DELAY DISPATCH TRIGGERS</Text>
+            <Text style={styles.cardSubtitle}>
+              Simulate realistic incoming carrier call audio to gracefully extract yourself from vulnerable scenarios
+            </Text>
+          </View>
 
           <View style={styles.buttonGrid}>
             <TouchableOpacity
-              style={[styles.delayButton, styles.delayButtonPrimary]}
+              style={[styles.delayButton, styles.delayButtonPrimary, HUD_SHADOWS.hardSm]}
               onPress={() => scheduleFakeCall(0)}
               activeOpacity={0.8}
             >
               <Text style={styles.delayIcon}>⚡</Text>
-              <Text style={styles.delayText}>Trigger NOW</Text>
-              <Text style={styles.delaySub}>Immediate Ring</Text>
+              <Text style={styles.delayTextPrimary}>TRIGGER NOW ↗</Text>
+              <Text style={styles.delaySubPrimary}>IMMEDIATE DISPATCH</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.delayButton}
+              style={[styles.delayButton, HUD_SHADOWS.hardSm]}
               onPress={() => scheduleFakeCall(5)}
               activeOpacity={0.8}
             >
               <Text style={styles.delayIcon}>⏳</Text>
-              <Text style={styles.delayText}>5 Seconds</Text>
-              <Text style={styles.delaySub}>Pocket Trigger</Text>
+              <Text style={styles.delayText}>05 SECONDS ↗</Text>
+              <Text style={styles.delaySub}>POCKET DELAY</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.delayButton}
+              style={[styles.delayButton, HUD_SHADOWS.hardSm]}
               onPress={() => scheduleFakeCall(10)}
               activeOpacity={0.8}
             >
               <Text style={styles.delayIcon}>⏱️</Text>
-              <Text style={styles.delayText}>10 Seconds</Text>
-              <Text style={styles.delaySub}>Walk-Away Delay</Text>
+              <Text style={styles.delayText}>10 SECONDS ↗</Text>
+              <Text style={styles.delaySub}>WALK-AWAY DELAY</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.delayButton}
+              style={[styles.delayButton, HUD_SHADOWS.hardSm]}
               onPress={() => scheduleFakeCall(30)}
               activeOpacity={0.8}
             >
               <Text style={styles.delayIcon}>🕒</Text>
-              <Text style={styles.delayText}>30 Seconds</Text>
-              <Text style={styles.delaySub}>Stealth Pre-set</Text>
+              <Text style={styles.delayText}>30 SECONDS ↗</Text>
+              <Text style={styles.delaySub}>STEALTH TIMER</Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* Caller Persona Selector */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>👤 Select Caller Identity</Text>
-          <Text style={styles.cardSubtitle}>
-            Current Persona: <Text style={{ color: '#38BDF8', fontWeight: 'bold' }}>{fakeCallSettings.callerName}</Text> ({fakeCallSettings.callerNumber})
-          </Text>
+        {/* Caller Persona Selector: Stark Block Cards */}
+        <View style={[styles.card, HUD_SHADOWS.hard]}>
+          <View style={styles.cardHeaderRow}>
+            <Text style={styles.cardTag}>[CALLER IDENTITY SELECTION]</Text>
+            <Text style={styles.cardTitle}>SELECT INCOMING PERSONA</Text>
+            <Text style={styles.cardSubtitle}>
+              Active Caller Profile: <Text style={styles.activePersonaHighlight}>{fakeCallSettings.callerName.toUpperCase()}</Text> ({fakeCallSettings.callerNumber})
+            </Text>
+          </View>
 
           <View style={styles.personaList}>
             {personas.map((p) => {
@@ -127,7 +139,8 @@ export const FakeCallScreen: React.FC = () => {
                   key={p.name}
                   style={[
                     styles.personaItem,
-                    isSelected && styles.personaItemSelected
+                    isSelected && styles.personaItemSelected,
+                    isSelected ? HUD_SHADOWS.hardSm : {}
                   ]}
                   onPress={() =>
                     updateFakeCallSettings({ callerName: p.name, callerNumber: p.number })
@@ -137,13 +150,15 @@ export const FakeCallScreen: React.FC = () => {
                   <Text style={styles.personaIcon}>{p.icon}</Text>
                   <View style={{ flex: 1 }}>
                     <Text style={[styles.personaName, isSelected && styles.personaNameSelected]}>
-                      {p.name}
+                      {p.name.toUpperCase()}
                     </Text>
-                    <Text style={styles.personaNumber}>{p.number}</Text>
+                    <Text style={[styles.personaNumber, isSelected && styles.personaNumberSelected]}>
+                      {p.number}
+                    </Text>
                   </View>
                   {isSelected && (
                     <View style={styles.activeCheck}>
-                      <Text style={styles.checkText}>✓ Active</Text>
+                      <Text style={styles.checkText}>[ACTIVE]</Text>
                     </View>
                   )}
                 </TouchableOpacity>
@@ -152,12 +167,13 @@ export const FakeCallScreen: React.FC = () => {
           </View>
         </View>
 
-        {/* Tactical Guidance Box */}
-        <View style={styles.guidanceBox}>
-          <Text style={styles.guidanceTitle}>💡 How This Protects You:</Text>
+        {/* Tactical Guidance Box: Neo-Brutalist Editorial Note */}
+        <View style={[styles.guidanceBox, HUD_SHADOWS.hard]}>
+          <Text style={styles.guidanceTag}>OPERATIONAL DOCTRINE // </Text>
+          <Text style={styles.guidanceTitle}>TACTICAL NON-CONFRONTATIONAL ESCAPE</Text>
           <Text style={styles.guidanceText}>
-            • Non-escalatory deterrence: An incoming call gives you a socially polite pretext to walk away, step into a well-lit establishment, or request public assistance without provoking an aggressor.{'\n'}
-            • Full-screen takeover: Screen realistically mimics iOS/Android phone call with audio synthesis ({'\u0026'} vibration on mobile devices).
+            • Non-escalatory deterrence: An incoming cellular call affords a natural, socially polite pretext to break conversation, relocate to a high-surveillance sector, or enter a staffed commercial establishment without provoking hostile escalation.{'\n'}
+            • Full-screen takeover: Screen authentically reproduces cellular interface protocols with audio dial-tone synthesis (dual-frequency 440Hz / 480Hz) and sensory vibration feedback on mobile devices.
           </Text>
         </View>
       </ScrollView>
@@ -168,14 +184,14 @@ export const FakeCallScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#090D16'
+    backgroundColor: HUD_COLORS.surfaceDark
   },
   header: {
     paddingHorizontal: 20,
     paddingVertical: 14,
-    backgroundColor: '#0B111E',
-    borderBottomWidth: 1,
-    borderBottomColor: '#1E293B'
+    backgroundColor: HUD_COLORS.surfaceDark,
+    borderBottomWidth: 2,
+    borderBottomColor: '#262626'
   },
   brandRow: {
     flexDirection: 'row',
@@ -183,90 +199,128 @@ const styles = StyleSheet.create({
     gap: 12
   },
   brandBadge: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: '#1E293B',
+    width: 44,
+    height: 44,
+    borderRadius: 0,
+    backgroundColor: HUD_COLORS.clay,
     borderWidth: 2,
-    borderColor: '#38BDF8',
+    borderColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center'
   },
   brandBadgeIcon: {
     fontSize: 22
   },
-  headerTitle: {
-    fontSize: 20,
+  headerTag: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
     fontWeight: '900',
-    color: '#FFFFFF'
+    color: HUD_COLORS.clay,
+    letterSpacing: 1
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    letterSpacing: -0.5
   },
   headerSubtitle: {
     fontSize: 11,
-    color: '#94A3B8',
-    marginTop: 2
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
+    color: '#A3A3A3',
+    marginTop: 1
   },
   scrollContent: {
     padding: 16,
     paddingBottom: 50,
-    maxWidth: 800,
+    maxWidth: 880,
     alignSelf: 'center',
     width: '100%',
     gap: 16
   },
   timerBanner: {
-    backgroundColor: '#1E3A8A',
-    borderRadius: 16,
+    backgroundColor: '#000000',
+    borderRadius: 0,
     padding: 14,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    borderWidth: 1,
-    borderColor: '#3B82F6'
+    borderWidth: 2,
+    borderColor: HUD_COLORS.riskMod
   },
   timerPulse: {
     width: 12,
     height: 12,
-    borderRadius: 6,
-    backgroundColor: '#38BDF8'
+    borderRadius: 0,
+    backgroundColor: HUD_COLORS.riskMod
   },
   timerBannerTitle: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: '#FFFFFF'
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 13,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    letterSpacing: 0.5
   },
   timerBannerSub: {
-    fontSize: 11,
-    color: '#BFDBFE',
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 10,
+    color: '#A3A3A3',
     marginTop: 2
   },
   cancelBannerBtn: {
-    backgroundColor: '#EF4444',
+    backgroundColor: HUD_COLORS.riskHigh,
     paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 10
+    paddingVertical: 8,
+    borderRadius: 0,
+    borderWidth: 2,
+    borderColor: '#FFFFFF'
   },
   cancelBannerText: {
     color: '#FFFFFF',
-    fontWeight: '700',
-    fontSize: 12
+    fontFamily: HUD_FONTS.mono,
+    fontWeight: '900',
+    fontSize: 11,
+    letterSpacing: 0.5
   },
   card: {
-    backgroundColor: '#131B2E',
-    borderRadius: 20,
+    backgroundColor: '#1E1E1E',
+    borderRadius: 0,
     padding: 18,
-    borderWidth: 1,
-    borderColor: '#1E293B'
+    borderWidth: 2,
+    borderColor: '#383838'
+  },
+  cardHeaderRow: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#2E2E2E',
+    paddingBottom: 8,
+    marginBottom: 14
+  },
+  cardTag: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    fontWeight: '900',
+    color: HUD_COLORS.clay,
+    letterSpacing: 1
   },
   cardTitle: {
-    fontSize: 16,
-    fontWeight: '800',
+    fontSize: 18,
+    fontWeight: '900',
     color: '#FFFFFF',
-    marginBottom: 4
+    letterSpacing: -0.5,
+    marginTop: 2
   },
   cardSubtitle: {
-    fontSize: 12,
-    color: '#94A3B8',
-    marginBottom: 16
+    fontSize: 11,
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
+    color: '#A3A3A3',
+    marginTop: 4
+  },
+  activePersonaHighlight: {
+    color: HUD_COLORS.clay,
+    fontFamily: HUD_FONTS.mono,
+    fontWeight: '900'
   },
   buttonGrid: {
     flexDirection: 'row',
@@ -275,30 +329,48 @@ const styles = StyleSheet.create({
   },
   delayButton: {
     width: '48.5%',
-    backgroundColor: '#1E293B',
-    borderRadius: 16,
+    backgroundColor: '#262626',
+    borderRadius: 0,
     padding: 16,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#334155'
+    borderWidth: 2,
+    borderColor: '#404040'
   },
   delayButtonPrimary: {
-    backgroundColor: '#2563EB',
-    borderColor: '#60A5FA'
+    backgroundColor: HUD_COLORS.clay,
+    borderColor: '#FFFFFF'
   },
   delayIcon: {
-    fontSize: 26,
+    fontSize: 24,
     marginBottom: 6
   },
   delayText: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: '#FFFFFF'
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 13,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    letterSpacing: 0.5
+  },
+  delayTextPrimary: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 13,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    letterSpacing: 0.5
   },
   delaySub: {
-    fontSize: 10,
-    color: '#CBD5E1',
-    marginTop: 2
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    color: '#A3A3A3',
+    marginTop: 4,
+    fontWeight: '700'
+  },
+  delaySubPrimary: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    color: '#FFE2D7',
+    marginTop: 4,
+    fontWeight: '800'
   },
   personaList: {
     gap: 8
@@ -306,60 +378,83 @@ const styles = StyleSheet.create({
   personaItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#090D16',
-    borderRadius: 14,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#334155',
+    backgroundColor: '#121212',
+    borderRadius: 0,
+    padding: 14,
+    borderWidth: 2,
+    borderColor: '#2E2E2E',
     gap: 12
   },
   personaItemSelected: {
-    borderColor: '#38BDF8',
-    backgroundColor: '#0D223B'
+    borderColor: HUD_COLORS.clay,
+    backgroundColor: '#2A1F1B',
+    borderWidth: 2
   },
   personaIcon: {
     fontSize: 24
   },
   personaName: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#CBD5E1'
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#E5E5E5'
   },
   personaNameSelected: {
-    color: '#FFFFFF'
+    color: '#FFFFFF',
+    fontWeight: '900'
   },
   personaNumber: {
-    fontSize: 11,
-    color: '#64748B',
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 10,
+    color: '#737373',
     marginTop: 2
   },
+  personaNumberSelected: {
+    color: '#FFE2D7'
+  },
   activeCheck: {
-    backgroundColor: '#2563EB',
-    paddingHorizontal: 10,
+    backgroundColor: HUD_COLORS.clay,
+    paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 10
+    borderRadius: 0,
+    borderWidth: 1,
+    borderColor: '#FFFFFF'
   },
   checkText: {
     color: '#FFFFFF',
-    fontSize: 11,
-    fontWeight: '700'
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 10,
+    fontWeight: '900'
   },
   guidanceBox: {
-    backgroundColor: '#0B132B',
-    borderRadius: 16,
+    backgroundColor: '#181818',
+    borderRadius: 0,
     padding: 16,
-    borderWidth: 1,
-    borderColor: '#1E293B'
+    borderWidth: 2,
+    borderColor: '#2E2E2E',
+    borderLeftWidth: 4,
+    borderLeftColor: HUD_COLORS.clay
+  },
+  guidanceTag: {
+    fontFamily: HUD_FONTS.mono,
+    fontSize: 9,
+    fontWeight: '900',
+    color: HUD_COLORS.clay,
+    letterSpacing: 1
   },
   guidanceTitle: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: '#38BDF8',
-    marginBottom: 6
+    fontSize: 14,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    marginTop: 2,
+    marginBottom: 6,
+    letterSpacing: -0.5
   },
   guidanceText: {
-    fontSize: 12,
-    color: '#94A3B8',
+    fontSize: 11,
+    fontFamily: HUD_FONTS.serif,
+    fontStyle: 'italic',
+    color: '#D4D4D4',
     lineHeight: 18
   }
 });
